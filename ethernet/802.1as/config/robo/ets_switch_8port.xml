@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2021 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<ETS_Cfg>
+    <globalEnable>true</globalEnable>
+    <operMode>avnu</operMode>
+    <boundaryModeEnable>false</boundaryModeEnable>
+    <intfCfg>
+        <intf>
+            <hwPortNum>0</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>2200</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>1</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>2200</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>2</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>2200</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>3</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>2200</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>4</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>2200</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>5</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>300</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>6</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>300</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+        <intf>
+            <hwPortNum>8</hwPortNum>
+            <initLogPdelayInterval>0</initLogPdelayInterval>
+            <avnuOperLogPdelayInterval>0</avnuOperLogPdelayInterval>
+            <avnuNbrPropDelay>300</avnuNbrPropDelay>
+            <avnuNbrRateRatio>1.0</avnuNbrRateRatio>
+            <allowedLostResp>3</allowedLostResp>
+        </intf>
+    </intfCfg>
+    <domainCfg>
+        <domain>
+            <domainNumber>0</domainNumber>
+            <avnuClockMode>slave</avnuClockMode>
+            <avnuSyncAbsenceTimeout>10</avnuSyncAbsenceTimeout>
+            <avnuGmRateRatio>1.0</avnuGmRateRatio>
+            <domainIntfCfg>
+                <intf>
+                    <!-- port 0 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>slave</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 1 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 2 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 3 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 4 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 5 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 6 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+                <intf>
+                    <!-- port 8 -->
+                    <portEnable>true</portEnable>
+                    <avnuPortRole>master</avnuPortRole>
+                    <initLogSyncInterval>-3</initLogSyncInterval>
+                    <avnuOperLogSyncInterval>0</avnuOperLogSyncInterval>
+                    <syncReceiptTimeout>3</syncReceiptTimeout>
+                </intf>
+            </domainIntfCfg>
+        </domain>
+    </domainCfg>
+</ETS_Cfg>

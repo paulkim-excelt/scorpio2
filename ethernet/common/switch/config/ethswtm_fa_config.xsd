@@ -1,0 +1,636 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2020 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:complexType name ="FA_MacEntryType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>MAC address Entry type to specify MAC address and domain.
+                       An all zero MAC address in this group(0:0:0:0:0:0) will
+                       be replaced by device's MAC address. However only one
+                       such entry is permitted per group as each group will have
+                       only one device MAC address.</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "mac" type = "FA_MacAddressType"/>
+            <xs:element name = "domain" type = "FA_MacDomainType" minOccurs = "0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name ="FA_MacAddressType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>MAC address in colon-octet notation xx:xx:xx:xx:xx:xx</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:pattern value = "([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name ="FA_MacDomainType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>MAC Domain- Internal/External</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "INTERNAL"/>
+            <xs:enumeration value = "EXTERNAL"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name ="FA_DeviceType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Device Name</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "MASTER"/>
+            <xs:enumeration value = "SLAVE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name ="FA_MacIndexType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>MAC address Index to specify which MAC address among the
+                    globally defined list has to be chosen</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "device" type = "FA_DeviceType" minOccurs = "0"/>
+            <xs:element name = "entry">
+                <xs:simpleType>
+                    <xs:annotation>
+                        <xs:documentation>
+                            <![CDATA[
+                                <!DOCTYPE html>
+                                <html>
+                                <body>
+                                <p>Entry number among the list of defined global MAC address entries</p>
+                                </body>
+                                </html>
+                            ]]>
+                        </xs:documentation>
+                    </xs:annotation>
+                    <xs:restriction base="xs:unsignedInt">
+                        <xs:minInclusive value="0"/>
+                        <xs:maxInclusive value="3"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:simpleType name="FA_IPAddressType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>IPv4 address in dot-decimal notation. Equivalent to [0-255].[0-255].[0-255].[0-255]
+                or IPv6 address in fully-specified colon-hextet notation [xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]:[xxxx]</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="((1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\.){3}(1?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])|([0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_OperationType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Next-hop operation</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <td>S_TAG</td>
+                        <td>Replace MAC header, use Service Provider Tag</td>
+                    </tr>
+                    <tr>
+                        <td>C_TAG</td>
+                        <td>Replace MAC header, use Customer Tag</td>
+                    </tr>
+                    <tr>
+                        <td>NO_TAG</td>
+                        <td>Replace MAC header, use no VLAN tag</td>
+                    </tr>
+                    <tr>
+                        <td>NO_OP</td>
+                        <td>Do not replace MAC header, just update Source and Destination MAC addresses</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "S_TAG"/>
+            <xs:enumeration value = "C_TAG"/>
+            <xs:enumeration value = "NO_TAG"/>
+            <xs:enumeration value = "NO_OP"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_VidType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>VLAN ID</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "4094"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_L4PortType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>UDP/TCP port number</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "65535"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_BhTcType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Traffic Class / Priority code point</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "7"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_BhTeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>802.1Q/P tagging/untagging encapsulation enforcement for the packet transmission</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Type</th>
+                        <th>Action</th>
+                    </tr>
+                    <tr>
+                        <td>NONE</td>
+                        <td>No enforcement (follow VLAN untag mask rules)</td>
+                    </tr>
+                    <tr>
+                        <td>UNTAG</td>
+                        <td>Untag enforcement</td>
+                    </tr>
+                    <tr>
+                        <td>HEADER</td>
+                        <td>Tag enforcement</td>
+                    </tr>
+                </table>
+
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "NONE"/>
+            <xs:enumeration value = "UNTAG"/>
+            <xs:enumeration value = "HEADER"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_BhDstPortType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Destination portmap: When non-zero value is chosen, the
+                packet is forwarded on the ports represented by the bitmap. When
+                zero value is chosen, the packet is forwarded according to the
+                switch forwarding rules</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:pattern value = "0x[0-9A-Fa-f]{1,8}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_SeedValueType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Hexadecimal 16bit seed for CRC computation</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:pattern value = "0x[0-9A-Fa-f]{1,4}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_CtfModeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>CTF operational mode</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "NORMAL"/>
+            <xs:enumeration value = "BYPASS"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name = "FA_CrcType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>CRC-16 hash functions: CCITT polynomial- (0 5 12 16) and
+                CRC16 polynomial- (0 2 15 16). This choice along with
+                seedValue may help in avoiding collisions in hash</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "CCITT"/>
+            <xs:enumeration value = "CRC16"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:complexType name = "FA_VlanTagType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>VLAN Tag consisting of PCP, DEI and VLAN ID</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "pcp" type = "FA_BhTcType"/>
+            <xs:element name = "dei" type = "xs:boolean">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Drop eligible indicator</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name = "vid" type = "FA_VidType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "FA_MatchType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Parameters used to identify a flow</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "da" type = "FA_MacIndexType" minOccurs = "0"/>
+            <xs:element name = "srcPort" type = "FA_L4PortType"/>
+            <xs:element name = "dstPort" type = "FA_L4PortType"/>
+            <xs:element name = "srcIP" type = "FA_IPAddressType"/>
+            <xs:element name = "dstIP" type = "FA_IPAddressType"/>
+            <xs:element name = "isTcp" type = "xs:boolean" default = "true" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Flag indicating if the flow is TCP (true) or UDP (false)</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name = "isIpV4" type = "xs:boolean" default = "true" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Flag indicating if the flow is IPv4 (true) or IPv6 (false)</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name = "isL2LlcSnap" type = "xs:boolean" default = "false" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Flag indicating if the flow is LLC/Snap (true) or Ethernet-II (false)</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name = "isInBound" type = "xs:boolean" default = "true" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Flag indicating if the flow is InBound (true) or OutBound (false)</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "FA_RemapType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Parameters to modify the packet in a matched flow</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "operation" type = "FA_OperationType"/>
+            <xs:element name = "sa" type = "FA_MacIndexType" minOccurs = "0"/>
+            <xs:element name = "da" type = "FA_MacAddressType"/>
+            <xs:element name = "vlan" type = "FA_VlanTagType" minOccurs = "0"/>
+            <xs:element name = "port" type = "FA_L4PortType" minOccurs = "0"/>
+            <xs:element name = "ip" type = "FA_IPAddressType" minOccurs = "0"/>
+            <xs:element name = "bhTc" type = "FA_BhTcType"/>
+            <xs:element name = "bhTe" type = "FA_BhTeType" minOccurs = "0"/>
+            <xs:element name = "bhDstPort" type = "FA_BhDstPortType" default = "0x0" minOccurs = "0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "FA_FlowType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Flow lookup parameters</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "match" type = "FA_MatchType"/>
+            <xs:element name = "remap" type = "FA_RemapType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "FA_CtfCfgType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Flow Accelerator global configuration</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "mode" type = "FA_CtfModeType" default = "NORMAL" minOccurs = "0"/>
+            <xs:element name = "crc" type = "FA_CrcType" default = "CRC16" minOccurs = "0"/>
+            <xs:element name = "seedValue" type = "FA_SeedValueType" default = "0x0" minOccurs = "0"/>
+            <xs:element name = "timestampPeriodSec" type = "xs:unsignedInt" default = "3600" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Timestamp period in seconds. It will be used for
+                            aging. After every such period, the 3-bit timestamp
+                            is incremented and the value wraps-around</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name = "validateMatchDA" type = "xs:boolean" minOccurs = "0">
+                <xs:annotation>
+                    <xs:documentation>
+                        <![CDATA[
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <p>Flag indicating if the incoming packet's DA has
+                            to be validated with match-DA(true) or not(false).
+                            When set to true, the "da" parameter in the flow's
+                            "match" is mandatory</p>
+                            </body>
+                            </html>
+                        ]]>
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "FA_MacDeviceType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Group of MAC addresses.
+                The first set is always for master/standalone device.
+                The second set of MACs for slave device</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "entry" type = "FA_MacEntryType" minOccurs = "0" maxOccurs = "4"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="ETHSWTM_FA_Cfg">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Flow Accelerator configuration containing global and flow configuration</p>
+                </body>
+                </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+      <xs:complexType>
+        <xs:sequence>
+            <xs:element name = "ctfCfg" type = "FA_CtfCfgType" minOccurs = "0"/>
+            <xs:element name = "deviceMacEntry" type = "FA_MacDeviceType" minOccurs = "0" maxOccurs="2"/>
+            <xs:element name = "flow" type = "FA_FlowType" minOccurs = "0" maxOccurs = "128"/>
+        </xs:sequence>
+      </xs:complexType>
+    </xs:element>
+</xs:schema>

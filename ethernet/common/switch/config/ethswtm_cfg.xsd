@@ -1,0 +1,993 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2022 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:simpleType name ="ETHSWTM_PortMaskType">
+    <xs:restriction base = "xs:string">
+    <xs:pattern value = "0x[0-9A-Fa-f]{4}"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_MACAddrType">
+    <xs:restriction base="xs:token">
+        <xs:pattern value="([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_VLANIDType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "4094"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_PCPType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "7"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_PortType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "standard"/>
+        <xs:enumeration value = "host"/>
+        <xs:enumeration value = "uplink"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name  = "ETHSWTM_PortPolicerActType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "block"/>
+        <xs:enumeration value = "drop"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_SchedAlgoType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "SP"/>
+        <xs:enumeration value = "WRR"/>
+        <xs:enumeration value = "DRR"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_PolicerPacketFlgMaskType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "unicast-lookup-hit"/>
+        <xs:enumeration value = "multicast-lookup-hit"/>
+        <xs:enumeration value = "reserved_multicast-lookup-hit"/>
+        <xs:enumeration value = "broadcast-lookup-hit"/>
+        <xs:enumeration value = "multicast-lookup-failed"/>
+        <xs:enumeration value = "unicast-lookup-failed"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_SwitchType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Mode of operation for the switch</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>Standard</td>
+                        <td>Operate switch in a stand-alone mode</td>
+                    </tr>
+                    <tr>
+                        <td>master</td>
+                        <td>Operate as master switch in stacked mode</td>
+                    </tr>
+                    <tr>
+                        <td>slave</td>
+                        <td>Operate as slave switch in stacked mode</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "standard"/>
+        <xs:enumeration value = "master"/>
+        <xs:enumeration value = "slave"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_BrcmHdrMode">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Option to enable/disable BRCM header on a particular port</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "disable"/>
+        <xs:enumeration value = "enable"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_MACAddLimitType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "4096"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_MAC_OverLimitActionType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Drop-packet"/>
+        <xs:enumeration value = "Redirect-to-CPU"/>
+        <xs:enumeration value = "Copy-to-CPU"/>
+        <xs:enumeration value = "Normal"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_SA_MoveActionType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Drop-packet"/>
+        <xs:enumeration value = "Redirect-to-CPU"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_VLAN_HoppingActionType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Drop-packet"/>
+        <xs:enumeration value = "Redirect-to-CPU"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "ETHSWTM_MAC_StickyActionType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Drop-packet"/>
+        <xs:enumeration value = "Redirect-to-CPU"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name = "ETHSWTM_PortPolicerCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Port Policer</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>pktMask</td>
+                        <td>Port policer packet flag type (bit mask value of the packet types on
+                            which this policer is to be applied)</td>
+                    </tr>
+                    <tr>
+                        <td>rateByteCount</td>
+                        <td>Amount of the data (excluding header) which can be received on this
+                            port in given time (rateTimeInterval)</td>
+                    </tr>
+                    <tr>
+                        <td>rateTimeInterval</td>
+                        <td>Time interval in seconds where configured bytes can be received
+                            without a rate limitation</td>
+                    </tr>
+                    <tr>
+                        <td>action</td>
+                        <td>Action to be taken by the switch in case of the rate violation
+                            BLOCK_SRC : Block the source (using MAC flow control Pause frame) on rate violation
+                            DROP_PKT  : Drop the packet on rate violation
+                            </td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "pktMask"
+            type = "ETHSWTM_PolicerPacketFlgMaskType"
+        />
+        <xs:element
+            name = "rateByteCount"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "rateTimeInterval"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "action"
+            type = "ETHSWTM_PortPolicerActType"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_PortIngressCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Ingress Configuration for the port</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>defaultVLAN</td>
+                        <td>Default VLAN for this port</td>
+                    </tr>
+                    <tr>
+                        <td>defaultPrio</td>
+                        <td>Default priority for this port</td>
+                    </tr>
+                    <tr>
+                        <td>dropUntagged</td>
+                        <td>If default VLAN is not configured and this is set to TRUE,
+                            all the untagged frames shall be dropped in this port</td>
+                    </tr>
+                    <tr>
+                        <td>tc</td>
+                        <td>Port traffic class. If configured, all the ingress packet
+                            on this port shall be assigned this traffic class.
+                            If set to 8, no traffic class based assignment shall be done on this port
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>policerEn</td>
+                        <td>Enable/disable policer (not supported yet)</td>
+                    </tr>
+                    <tr>
+                        <td>policer</td>
+                        <td>Port policer (see below for details)</td>
+                    </tr>
+                    <tr>
+                        <td>pcp2tcMap</td>
+                        <td>8-bit value indicating the PCP to traffic class map</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "defaultVLAN"
+            type = "ETHSWTM_VLANIDType"
+        />
+        <xs:element
+            name = "defaultPrio"
+            type = "ETHSWTM_PCPType"
+        />
+        <xs:element
+            name = "dropUntagged"
+            type = "xs:boolean"
+        />
+        <xs:element
+            name = "tc"
+            type = "ETHSWTM_PCPType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "policerEn"
+            type = "xs:boolean"
+            minOccurs = "0"
+            default = "false"
+        />
+        <xs:element
+            name = "policer"
+            type = "ETHSWTM_PortPolicerCfgType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "pcp2tcMap"
+            type = "ETHSWTM_PCPType"
+            minOccurs = "0"
+            maxOccurs = "8"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_PortSchType">
+    <xs:sequence>
+        <xs:element
+            name = "algo"
+            type = "ETHSWTM_SchedAlgoType"
+            minOccurs = "8"
+            maxOccurs = "8"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_ShaperCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Shaper Configuration</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>rateBps</td>
+                        <td>Increase in credit in bits per second (shall be multiple of 64000)</td>
+                    </tr>
+                    <tr>
+                        <td>burstBytes</td>
+                        <td>Bucket size in bytes (shall be a multiple of 64)</td>
+                    </tr>
+                    <tr>
+                        <td>avbShapingModeEn</td>
+                        <td>Enable AVB shaping mode</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "rateBps"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "burstBytes"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "avbShapingModeEn"
+            type = "xs:boolean"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_FifoCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Configuration of port FIFOs</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>Index of FIFO</td>
+                    </tr>
+                    <tr>
+                        <td>minLen</td>
+                        <td>FIFO minimum length in bytes (guaranteed size of FIFO)</td>
+                    </tr>
+                    <tr>
+                        <td>tc</td>
+                        <td>Traffic class assigned to this FIFO</td>
+                    </tr>
+                    <tr>
+                        <td>shaper</td>
+                        <td>Shaper configuration (see below for details)</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "id"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "minLen"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "tc"
+            type = "ETHSWTM_PCPType"
+        />
+        <xs:element
+            name = "shaper"
+            type = "ETHSWTM_ShaperCfgType"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_FifoCfgListType">
+    <xs:sequence>
+        <xs:element
+            name = "fifo"
+            type = "ETHSWTM_FifoCfgType"
+            minOccurs = "1"
+            maxOccurs = "8"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_PortEgressCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Port egress configuration</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>fifoList</td>
+                        <td>Configuration of port FIFOs (see for details)</td>
+                    </tr>
+                    <tr>
+                        <td>scheduler</td>
+                        <td>Port scheduler. Array of scheduler algorithm type for all port FIFOs</td>
+                    </tr>
+                    <tr>
+                        <td>pcpRemarkEn</td>
+                        <td>Enable/disable PCP remarking</td>
+                    </tr>
+                    <tr>
+                        <td>tc2pcpMap</td>
+                        <td>Traffic class to PCP map. If pcpRemarkEn is set as false, all instances of this
+                            sub-element are ignored. However if pcpRemarkEn is set as TRUE, exactly 8 instances of
+                            tc2pcpMap field shall be provided, in the order of TC0, TC1 to TC7
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>portShaper</td>
+                        <td>Shaper configuration (see below for details)</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "fifoList"
+            type = "ETHSWTM_FifoCfgListType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "scheduler"
+            type = "ETHSWTM_PortSchType"
+        />
+        <xs:element
+            name = "pcpRemarkEn"
+            type = "xs:boolean"
+        />
+        <xs:element
+            name = "tc2pcpMap"
+            type = "ETHSWTM_PCPType"
+            minOccurs = "0"
+            maxOccurs = "8"
+        />
+        <xs:element
+            name = "portShaper"
+            type = "ETHSWTM_ShaperCfgType"
+            minOccurs = "0"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_AddressLimitingType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Address limiting configuration</p>
+                <p>macLearningLimit : Port SA Learned Limit. It defines the maximum number of MAC addresses allowed to
+                                      learn on the ingress port. The configured value of 0 will mean no dynamic address
+                                      will be learned on the chip. When the maximum limit is set, it can't over 4096.
+                                      If it is written above 4096, it will be to set to 4096</p>
+                <p>action           : Indicates the actions when the MAC Address limit counter of the port is crossed the max
+                                      programmed value, If this field is non-zero otherwise address limiting
+                                      is disabled for this port</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name = "macLearningLimit"
+            type = "ETHSWTM_MACAddLimitType"
+        />
+        <xs:element
+            name = "action"
+            type = "ETHSWTM_MAC_OverLimitActionType"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_SecurityCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Security configuration</p>
+                <p>addressLimiting       : Address limiting config (see for details)</p>
+                <p>stickyMACAction       : Indicates the actions after receiving packet with
+                                           source MAC address, which is not sticky to this port, If
+                                           this field is non-zero otherwise sticky MAC address feature
+                                           is disabled for this port</p>
+                <p>stationMovementAction : Action to be taken. Possible options are:
+                                           Drop the packet
+                                           Re-direct to CPU</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name = "addressLimiting"
+            type = "ETHSWTM_AddressLimitingType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "stickyMACAction"
+            type = "ETHSWTM_MAC_StickyActionType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "stationMovementAction"
+            type = "ETHSWTM_SA_MoveActionType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_SwitchPortConfigType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Port configuration list</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>role</td>
+                        <td>Port role. Possible options are standard, host port and up-link port</td>
+                    </tr>
+                    <tr>
+                        <td>enableTimeStamp</td>
+                        <td>Enable or disable timestamping support</td>
+                    </tr>
+                    <tr>
+                        <td>enableJumboFrm</td>
+                        <td>Enable or disable jumbo frame support</td>
+                    </tr>
+                    <tr>
+                        <td>ingressCfg</td>
+                        <td>Ingress configuration for the port. See for details</td>
+                    </tr>
+                    <tr>
+                        <td>egressCfg</td>
+                        <td>Egress configuration for the port. See for details</td>
+                    </tr>
+                    <tr>
+                        <td>securityCfg</td>
+                        <td>Security configuration for the port. See for details</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "role"
+            type = "ETHSWTM_PortType"
+        />
+        <xs:element
+            name = "enableTimeStamp"
+            type = "xs:boolean"
+            minOccurs = "0"
+            default = "false"
+        />
+        <xs:element
+            name = "enableJumboFrm"
+            type = "xs:boolean"
+            minOccurs = "0"
+            default = "false"
+        />
+        <xs:element
+            name = "ingressCfg"
+            type = "ETHSWTM_PortIngressCfgType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "egressCfg"
+            type = "ETHSWTM_PortEgressCfgType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "securityCfg"
+            type = "ETHSWTM_SecurityCfgType"
+            minOccurs = "0"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_PortConfigType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Port configuration</p>
+                <p>portID        : Unique ID for the port</p>
+                <p>switchPortCfg : Port configuration. See for details</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "portID"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "switchPortCfg"
+            type = "ETHSWTM_SwitchPortConfigType"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_PortCfgListType">
+    <xs:sequence>
+        <xs:element
+            name = "portCfg"
+            type = "ETHSWTM_PortConfigType"
+            minOccurs = "1"
+            maxOccurs = "16"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWT_CFPStreamPolicerType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Policier specific fields:</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>rate</td>
+                        <td>committed information rate in Kbps</td>
+                    </tr>
+                    <tr>
+                        <td>burstSize</td>
+                        <td>committed burst size in bytes</td>
+                    </tr>
+                    <tr>
+                        <td>ingressPortMask</td>
+                        <td>List of ports on the ingress side</td>
+                    </tr>
+                    <tr>
+                        <td>dropThreshold</td>
+                        <td>Number of packets which are allowed to exceed the
+                            bandwidth before the stream is blocked/reportedList
+                            of ports on the ingress side
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>monitoringInterval</td>
+                        <td>Number of system ticks to be used as the polling
+                            interval for checking if dropThreshold is exceeded
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>block/report</td>
+                        <td>Action to be taken in case of excess</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "rate"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "burstSize"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "ingressPortMask"
+            type = "ETHSWTM_PortMaskType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "dropThreshold"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "monitoringInterval"
+            type = "xs:unsignedInt"
+        />
+        <xs:element
+            name = "block"
+            type = "xs:boolean"
+        />
+        <xs:element
+            name = "report"
+            type = "xs:boolean"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWT_CFPStreamPolicerConfigType">
+    <xs:sequence>
+        <xs:element
+            name = "policer"
+            type = "ETHSWT_CFPStreamPolicerType"
+            minOccurs = "1"
+            maxOccurs = "16"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_StreamEntryType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Entries for the stream</p>
+                <p>macAddr:             MAC address of the stream to be added</p>
+                <p>vlan:                VLAN for the stream</p>
+                <p>destinationPortMask: List of ports for which this stream is intended</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "macAddress"
+            type = "ETHSWTM_MACAddrType"
+        />
+        <xs:element
+            name = "vlan"
+            type = "ETHSWTM_VLANIDType"
+        />
+        <xs:element
+            name = "destinationPortMask"
+            type = "ETHSWTM_PortMaskType"
+        />
+        <xs:element
+            name = "policerList"
+            type = "ETHSWT_CFPStreamPolicerConfigType"
+            minOccurs = "0">
+                <xs:unique name="uniqueIngressPortMask">
+                    <xs:selector xpath = "policer" />
+                    <xs:field xpath = "ingressPortMask" />
+                </xs:unique>
+        </xs:element>
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_StreamTableType">
+    <xs:sequence>
+        <xs:element
+            name = "stream"
+            type = "ETHSWTM_StreamEntryType"
+            minOccurs = "1"
+            maxOccurs = "512"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_VLANEntryType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>VLAN entry details:</p>
+                <p>vlan      : 16-bit field indicatin the VLAN ID</p>
+                <p>portMask  : List of Ports which should be participating in the VLAN</p>
+                <p>tagMask   : List of ports that are tagged</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "vlan"
+            type = "ETHSWTM_VLANIDType"
+        />
+        <xs:element
+            name = "portMask"
+            type = "ETHSWTM_PortMaskType"
+        />
+        <xs:element
+            name = "tagMask"
+            type = "ETHSWTM_PortMaskType"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_VLANTableType">
+    <xs:sequence>
+        <xs:element
+            name = "vid"
+            type = "ETHSWTM_VLANEntryType"
+            minOccurs = "1"
+            maxOccurs = "512"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWT_GlobalSecurityCfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Security options on the switch</p>
+                <p>vlanHoppingAction     : Action after detecting Invalid double-tagged-packet,
+                                           If this field is non-zero otherwise Invalid double-tagged-packet
+                                           detection feature is disabled for this port</p>
+                <p>totalMACLearningLimit : Total count of dynamically learned unicast MAC addresses
+                                           across all the ports. The limit is capped at 4096</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name = "vlanHoppingAction"
+            type = "ETHSWTM_VLAN_HoppingActionType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name  = "totalMACLearningLimit"
+            type = "ETHSWTM_MACAddLimitType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "ETHSWTM_ConfigType">
+    <xs:sequence>
+        <xs:element
+            name = "portCfgList"
+            type = "ETHSWTM_PortCfgListType"
+        >
+            <xs:unique name="uniquePortID">
+                <xs:selector xpath = "portCfg/portID"/>
+                <xs:field xpath = "." />
+            </xs:unique>
+        </xs:element>
+        <xs:element
+            name = "brcmHdrMode"
+            type = "ETHSWTM_BrcmHdrMode"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "switchType"
+            type = "ETHSWTM_SwitchType"
+        />
+        <xs:element
+            name = "streamTable"
+            type = "ETHSWTM_StreamTableType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "vidTable"
+            type = "ETHSWTM_VLANTableType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "globalSecurityCfg"
+            type = "ETHSWT_GlobalSecurityCfgType"
+            minOccurs = "0"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:element
+    name = "ETHSWTM_Cfg"
+    type = "ETHSWTM_ConfigType"
+    />
+</xs:schema>

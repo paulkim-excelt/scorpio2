@@ -1,0 +1,86 @@
+diff -Naur a/ethxcvr_board.c b/ethxcvr_board.c
+--- a/ethxcvr_board.c	2022-05-17 16:35:36.234588748 +0900
++++ b/ethxcvr_board.c	2022-05-17 18:34:04.351229000 +0900
+@@ -86,9 +86,6 @@
+     |  5   |    RGMII   |      DENALI     |       1       |
+     |  6   |    RGMII   |      DENALI     |       2       |
+ */
+-
+- 
+-
+ int32_t ETHXCVR_BoardGetPhyFnTbl(const ETHXCVR_PortConfigType *const aConfig,
+                                  const ETHXCVR_FuncTblType **const aPhyFnTbl,
+                                  ETHXCVR_CntxtType **const aPhyCntxt)
+@@ -125,6 +122,14 @@
+             *aPhyCntxt = &ETHXCVR_PlatformCntxt[2];
+         }
+         break;
++#if 1 /* --2022.05-17-paul RGMII interface for P8*/
++      case 8U:
++	   if ((aConfig->busMode == ETHXCVR_BUSMODE_RGMII)
++            && (ETHXCVR_ACCESSMODE_MDIO == aConfig->phy.accessMode)) {
++            *aPhyFnTbl = denaliPhyTbl;
++            *aPhyCntxt = &ETHXCVR_PlatformCntxt[1];
++        }
++#endif
+     default:
+         break;
+     }
+@@ -216,18 +221,20 @@
+                   (ETHXCVR_SPEED_5000MBPS == aConfig->speed)) &&
+                    (ETHXCVR_BOOLEAN_FALSE == aConfig->autoNeg)) {
+             retVal = BCM_ERR_OK;
+-        }
++        	}
+             else if (ETHXCVR_SPEED_1000MBPS == aConfig->speed) {
+                 retVal = BCM_ERR_OK;
+-            } else {
++            } 
++			else 
++			{
+                 retVal = BCM_ERR_INVAL_PARAMS;
+             }
+         } else
+-#ifdef ENABLE_ETH_DENALIPHY
++#ifdef ENABLE_ETH_DENALIPHY 
+         if ((ETHXCVR_BUSMODE_RGMII == aConfig->busMode) &&
+             (ETHXCVR_ACCESSMODE_MDIO == aConfig->phy.accessMode) &&
+             (1U == aConfig->phy.hwID) &&
+-            (0U == aConfig->phy.slaveID) &&
++            (24U == aConfig->phy.slaveID) &&
+             (ETHXCVR_BOOLEAN_FALSE == aConfig->autoNeg) &&
+             (((ETHXCVR_PHYMEDIA_1000BASET1 == aConfig->phy.phyMedia) && (ETHXCVR_SPEED_1000MBPS == aConfig->speed)) ||
+              ((ETHXCVR_PHYMEDIA_100BASET1 == aConfig->phy.phyMedia) && (ETHXCVR_SPEED_100MBPS == aConfig->speed)))) {
+@@ -248,13 +255,31 @@
+             }
+             else if (ETHXCVR_SPEED_1000MBPS == aConfig->speed) {
+                 retVal = BCM_ERR_OK;
+-            } else {
++            } 
++			else 
++			{
+                 retVal = BCM_ERR_INVAL_PARAMS;
+             }
++        } else
++#ifdef ENABLE_ETH_DENALIPHY        /* --2022.05-17-paul RGMII interface for P8*/
++        if ((ETHXCVR_BUSMODE_RGMII == aConfig->busMode) &&
++            (ETHXCVR_ACCESSMODE_MDIO == aConfig->phy.accessMode) &&
++            (1U == aConfig->phy.hwID) &&
++            (0U == aConfig->phy.slaveID) &&
++            (ETHXCVR_BOOLEAN_FALSE == aConfig->autoNeg) &&
++            (((ETHXCVR_PHYMEDIA_1000BASET1 == aConfig->phy.phyMedia) && (ETHXCVR_SPEED_1000MBPS == aConfig->speed)) ||
++             ((ETHXCVR_PHYMEDIA_100BASET1 == aConfig->phy.phyMedia) && (ETHXCVR_SPEED_100MBPS == aConfig->speed)))) {
++            retVal = BCM_ERR_OK;
+         } else {
+             retVal = BCM_ERR_INVAL_PARAMS;
+         }
++
++#else
++		retVal = BCM_ERR_OK;
++#endif
+         break;
++
++		
+     default:
+         retVal = BCM_ERR_INVAL_PARAMS;
+         break;

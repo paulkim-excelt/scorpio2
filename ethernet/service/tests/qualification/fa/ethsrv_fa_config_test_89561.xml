@@ -1,0 +1,124 @@
+<?xml version="1.0" ?>
+<!--
+ Copyright 2020 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+<ETHSRV_FA_Cfg>
+    <ctfCfg>
+        <mode>NORMAL</mode>
+        <crc>CCITT</crc>
+        <seedValue>0x0</seedValue>
+        <timestampPeriodSec>64</timestampPeriodSec>
+        <validateMatchDA>true</validateMatchDA>
+    </ctfCfg>
+    <deviceMacEntry>
+        <entry>
+            <mac>00:11:22:33:44:03</mac>
+            <domain>INTERNAL</domain>
+        </entry>
+        <entry>
+            <mac>10:11:22:33:44:03</mac>
+            <domain>INTERNAL</domain>
+        </entry>
+        <entry>
+            <mac>00:00:00:00:00:00</mac>
+            <domain>INTERNAL</domain>
+        </entry>
+    </deviceMacEntry>
+    <flow>
+        <match>
+            <da>
+                <device>MASTER</device>
+                <entry>0</entry>
+            </da>
+            <srcPort>40000</srcPort>
+            <dstPort>50000</dstPort>
+            <srcIP>10.20.30.40</srcIP>
+            <dstIP>10.20.30.41</dstIP>
+            <isTcp>false</isTcp>
+            <isIpV4>true</isIpV4>
+            <isL2LlcSnap>false</isL2LlcSnap>
+            <isInBound>false</isInBound>
+        </match>
+        <remap>
+            <operation>S_TAG</operation>
+            <da>AA:BB:CC:DD:EE:0B</da>
+            <vlan>
+                <pcp>3</pcp>
+                <dei>false</dei>
+                <vid>11</vid>
+            </vlan>
+            <port>00</port>
+            <ip>00.00.00.00</ip>
+            <bhTc>0</bhTc>
+            <bhTe>NONE</bhTe>
+            <bhDstPort>0x00000000</bhDstPort>
+        </remap>
+    </flow>
+    <flow>
+        <match>
+            <da>
+                <device>MASTER</device>
+                <entry>1</entry>
+            </da>
+            <srcPort>40000</srcPort>
+            <dstPort>50000</dstPort>
+            <srcIP>FD0A:0000:0000:0000:0000:0000:0000:000A</srcIP>
+            <dstIP>FD0B:0000:0000:0000:0000:0000:0000:000B</dstIP>
+            <isTcp>false</isTcp>
+            <isIpV4>false</isIpV4>
+            <isL2LlcSnap>false</isL2LlcSnap>
+            <isInBound>false</isInBound>
+        </match>
+        <remap>
+            <operation>NO_TAG</operation>
+            <sa>
+                <device>MASTER</device>
+                <entry>1</entry>
+            </sa>
+            <da>AA:BB:CC:DD:EE:0B</da>
+            <port>00</port>
+            <ip>0000:0000:0000:0000:0000:0000:0000:0000</ip>
+            <bhTc>0</bhTc>
+            <bhTe>NONE</bhTe>
+            <bhDstPort>0x00000000</bhDstPort>
+        </remap>
+    </flow>
+</ETHSRV_FA_Cfg>

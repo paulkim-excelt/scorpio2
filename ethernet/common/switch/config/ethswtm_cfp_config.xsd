@@ -1,0 +1,875 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2022 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:simpleType name ="CFP_Hex16String">
+    <xs:restriction base = "xs:string">
+        <xs:pattern value = "0x[0-9A-Fa-f]{4}"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name ="CFP_Hex8String">
+    <xs:restriction base = "xs:string">
+        <xs:pattern value = "0x[0-9A-Fa-f]{2}"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name ="CFP_PortBitmapString">
+    <xs:restriction base = "xs:string">
+        <xs:pattern value = "0x[0-9A-Fa-f]+"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_VLANIDType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "4094"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_TCType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "7"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_PktLenCorrType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "None"/>
+        <xs:enumeration value = "Add-Pre-SFD"/>
+        <xs:enumeration value = "Add-Pre-SFD-IFG"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_L2FramingType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "DIXv2"/>
+        <xs:enumeration value = "SNAP-Public"/>
+        <xs:enumeration value = "LLC"/>
+        <xs:enumeration value = "SNAP-Private"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_AcceptableFrameType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Un-Tagged"/>
+        <xs:enumeration value = "Priority-Tagged"/>
+        <xs:enumeration value = "VLAN-Tagged"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_UDFBaseType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "SOP"/>
+        <xs:enumeration value = "End-L2-Header"/>
+        <xs:enumeration value = "End-L3-Header"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_UDFOffsetType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "31"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_TTLValType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "255"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_ChangeFwdMapType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "No"/>
+        <xs:enumeration value = "Remove"/>
+        <xs:enumeration value = "Replace"/>
+        <xs:enumeration value = "Add"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_ColorType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "Green"/>
+        <xs:enumeration value = "Yellow"/>
+        <xs:enumeration value = "Red"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_PolicerModeType">
+    <xs:restriction base = "xs:string">
+        <xs:enumeration value = "RFC2698"/>
+        <xs:enumeration value = "RFC4115"/>
+        <xs:enumeration value = "MEF"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name = "CFP_UDFType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Structure for CFP UDF</p>
+                <p>baseFld : UDF Base definitions</p>
+                             <p>Possible values are:</p>
+                             <p>SOP : Start Of Packet</p>
+                             <p>ENDL2HDR : End of L2 header</p>
+                             <p>ENDL3HDR : End of L3 header</p>
+                <p>offset  : Offset of the UDF encoded in a byte as follows:
+                             base(3) | offset (5)</p>
+                             <p>baseFld and offset are together in a single 8-bit value</p>
+                <p>value   : Value of the UDF </p>
+                <p>mask    : Value of the UDF mask</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name = "baseFld"
+            type = "CFP_UDFBaseType"
+        />
+        <xs:element
+            name = "offset"
+            type = "CFP_UDFOffsetType"
+        />
+        <xs:element
+            name = "value"
+            type = "CFP_Hex16String"
+        />
+        <xs:element
+            name = "mask"
+            type = "CFP_Hex16String"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "CFP_UDFListType">
+    <xs:sequence>
+        <xs:element
+            name = "udf"
+            type = "CFP_UDFType"
+            minOccurs = "1"
+            maxOccurs = "9"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "CFP_VLANTagType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>VLAN Tag and Status Information</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>acceptableFrame</td>
+                        <td>Possible values are VLAN-Tagged(1), Priority-Tagged(1) and Un-Tagged</td>
+                    </tr>
+                    <tr>
+                        <td>id</td>
+                        <td>VLAN-ID (0-4094)</td>
+                    </tr>
+                    <tr>
+                        <td>id_mask</td>
+                        <td>Mask for VLAN-ID (0-4094)</td>
+                    </tr>
+                    <tr>
+                        <td>pcp</td>
+                        <td>PCP value (0-7)</td>
+                    </tr>
+                    <tr>
+                        <td>pcp_mask</td>
+                        <td>Mask for PCP (0-7)</td>
+                    </tr>
+                    <tr>
+                        <td>dei</td>
+                        <td>Whether DEI field is valid or not</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name = "acceptableFrame"
+            type = "CFP_AcceptableFrameType"
+            minOccurs = "0"
+            maxOccurs = "3"
+        />
+        <xs:element
+            name = "id"
+            type = "CFP_VLANIDType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "idMask"
+            type = "CFP_VLANIDType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "pcp"
+            type = "CFP_TCType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "pcpMask"
+            type = "CFP_TCType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "dei"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "CFP_KeyType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Key Type for the CFP fields</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>l2Framing</td>
+                        <td>Definitions for L2 framing (DIXV2, SNAP_PUB, SNAP_PVT, LLC)</td>
+                    </tr>
+                    <tr>
+                        <td>ingressPortBitmap</td>
+                        <td>Bitmap representing the ingress ports to which the rule applies</td>
+                    </tr>
+                    <tr>
+                        <td>etherType</td>
+                        <td>Eth Type for the packet for which the rule is to be applied</td>
+                    </tr>
+                    <tr>
+                        <td>etherTypeMask</td>
+                        <td>Mask for the Ethertype field</td>
+                    </tr>
+                    <tr>
+                        <td>ttlRange</td>
+                        <td>Value between 0-3</td>
+                    </tr>
+                    <tr>
+                        <td>authentication</td>
+                        <td>Whether authentication is required TRUE/FALSE</td>
+                    </tr>
+                    <tr>
+                        <td>nonFirstFrag</td>
+                        <td>Whether this is non first fragment field in the packet</td>
+                    </tr>
+                    <tr>
+                        <td>fragmentation</td>
+                        <td>Whether fragmentation is allowed TRUE/FALSE</td>
+                    </tr>
+                    <tr>
+                        <td>protocol</td>
+                        <td>Protocol field (0-255)</td>
+                    </tr>
+                    <tr>
+                        <td>protocolMask</td>
+                        <td>Mask for the Protocol field</td>
+                    </tr>
+                    <tr>
+                        <td>tos</td>
+                        <td>Type of Service field in IPv4 header</td>
+                    </tr>
+                    <tr>
+                        <td>tosMask</td>
+                        <td>Mask for TOS field</td>
+                    </tr>
+                    <tr>
+                        <td>cTag</td>
+                        <td>C Tag Information (see for details)</td>
+                    </tr>
+                    <tr>
+                        <td>sTag</td>
+                        <td>S Tag Information (see for details)</td>
+                    </tr>
+                    <tr>
+                        <td>udfList</td>
+                        <td>List of UDFs for the rule</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name  = "l2Framing"
+            type = "CFP_L2FramingType"
+            default = "DIXv2"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "ingressPortBitmap"
+            type = "CFP_PortBitmapString"
+        />
+        <xs:element
+            name = "etherType"
+            type = "CFP_Hex16String"
+            default = "0x0000"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "etherTypeMask"
+            type = "CFP_Hex16String"
+            default = "0xFFFF"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "ttlRange"
+            type = "CFP_TTLValType"
+            default = "0"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "authentication"
+            type = "xs:boolean"
+            default = "false"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "nonFirstFrag"
+            type = "xs:boolean"
+            default = "false"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "fragmentation"
+            type = "xs:boolean"
+            default = "false"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "protocol"
+            type = "CFP_Hex8String"
+            default = "0x00"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "protocolMask"
+            type = "CFP_Hex8String"
+            default = "0xFF"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "tos"
+            type = "CFP_Hex8String"
+            default = "0x00"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "tosMask"
+            type = "CFP_Hex8String"
+            default = "0x00"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "cTag"
+            type = "CFP_VLANTagType"
+            minOccurs = "0"
+        >
+            <xs:unique name="uniqueCtagStatus">
+                <xs:selector xpath="acceptableFrame"/>
+                <xs:field xpath="."/>
+            </xs:unique>
+        </xs:element>
+        <xs:element
+            name = "sTag"
+            type = "CFP_VLANTagType"
+            minOccurs = "0"
+        >
+            <xs:unique name="uniqueStagStatus">
+                <xs:selector xpath="acceptableFrame"/>
+                <xs:field xpath="."/>
+            </xs:unique>
+        </xs:element>
+        <xs:element
+            name = "udfList"
+            type = "CFP_UDFListType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "CFP_DstMapFlagsType">
+    <xs:all>
+        <xs:element
+            name  = "portMap"
+            type = "CFP_PortBitmapString"
+        />
+        <xs:element
+            name = "change"
+            type = "CFP_ChangeFwdMapType"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "CFP_ActionType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>Action to be performed when a rule is hit</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>changeInBandDestination</td>
+                        <td>Action for In-bandwidth profile traffic
+                            portMap: 16-bit field indicating portMap
+                            change: No change, Remove ARL dest, Replace ARL dest and Add ARL dest
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>changeOutOfBandDestination</td>
+                        <td>Action for Out-bandwidth profile traffic
+                            portMap: 16-bit field indicating portMap
+                            change: No change, Remove ARL dest, Replace ARL dest and Add ARL dest
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>changeInBandTOS</td>
+                        <td>Action for TOS flags for In-bandwidth profile (8-bit field)</td>
+                    </tr>
+                    <tr>
+                        <td>changeOutOfBandTOS</td>
+                        <td>Action for TOS flags for Out-bandwidth profile (8-bit field)</td>
+                    </tr>
+                    <tr>
+                        <td>changeTC</td>
+                        <td>Action for new TC (3-bit field)</td>
+                    </tr>
+                    <tr>
+                        <td>bypassSTP</td>
+                        <td>Whether to bypass STP (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>bypassEAP</td>
+                        <td>Whether to bypass EAP (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>bypassVLAN</td>
+                        <td>Whether to bypass VLAN (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>loopbackEn</td>
+                        <td>Whether loopback is enabled (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>redDfltProfile</td>
+                        <td>To_be_Done</td>
+                    </tr>
+                    <tr>
+                        <td>bypassMACLimit</td>
+                        <td>Whether to bypass the MAC limit (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>mirrorOutBandTraffic</td>
+                        <td>Whether to mirror the OutBand Traffic (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>mirrorInBandTraffic</td>
+                        <td>Whether to mirror the InBand Traffic (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>reasonCode</td>
+                        <td>Indicates the reason why this packet was forwarded to CPU</td>
+                    </tr>
+                    <tr>
+                        <td>changeColor</td>
+                        <td>Change the color of the packet (Green, Yellow and Red)</td>
+                    </tr>
+                    <tr>
+                        <td>enablePolicer</td>
+                        <td>Enable Policer for this action (See for details)</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name  = "changeInBandDestination"
+            type = "CFP_DstMapFlagsType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name  = "changeOutOfBandDestination"
+            type = "CFP_DstMapFlagsType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "changeInBandTOS"
+            type = "CFP_Hex8String"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "changeOutOfBandTOS"
+            type = "CFP_Hex8String"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "changeTC"
+            type = "CFP_TCType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "bypassSTP"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "bypassEAP"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "bypassVLAN"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "loopbackEn"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "redDfltProfile"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "bypassMACLimit"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "mirrorOutBandTraffic"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "mirrorInBandTraffic"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "reasonCode"
+            type = "CFP_Hex8String"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "changeColor"
+            type = "CFP_ColorType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "enablePolicer"
+            type = "CFP_MeterType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:simpleType name = "CFP_BucketSizeType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "0"/>
+        <xs:maxInclusive value = "1048575"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:simpleType name = "CFP_RateType">
+    <xs:restriction base = "xs:unsignedInt">
+        <xs:minInclusive value = "4"/>
+        <xs:maxInclusive value = "2097152"/>
+    </xs:restriction>
+</xs:simpleType>
+
+<xs:complexType name = "CFP_BucketType">
+    <xs:all>
+        <xs:element
+            name = "bktSize"
+            type = "CFP_BucketSizeType"
+        />
+        <xs:element
+            name = "burstSize"
+            type = "CFP_BucketSizeType"
+        />
+        <xs:element
+            name = "rate"
+            type = "CFP_RateType"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "CFP_MeterType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>CFP meter</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>policerMode</td>
+                        <td>Policer mode (RFC2698, RFC4115, MEF)</td>
+                    </tr>
+                    <tr>
+                        <td>couplingFlag</td>
+                        <td>Whether Coupling flag needs to be enabled (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>colorMode</td>
+                        <td>Whether color mode needs to be enabled (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>policerAction</td>
+                        <td>Whether policer action needs to be enabled (TRUE/FALSE)</td>
+                    </tr>
+                    <tr>
+                        <td>cir</td>
+                        <td>Committed Information Rate
+                            bktSize   : Committed bucket size
+                            burstSize : Committed burst size
+                            rate      : Committed information rate
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>eir</td>
+                        <td>Excess Information Rate
+                            bktSize   : Excess bucket size
+                            burstSize : Excess burst size
+                            rate      : Excess information rate
+                        </td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name  = "policerMode"
+            type = "CFP_PolicerModeType"
+            minOccurs = "1"
+        />
+        <xs:element
+            name  = "couplingFlag"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "colorMode"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "policerAction"
+            type = "xs:boolean"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "cir"
+            type = "CFP_BucketType"
+            minOccurs = "1"
+        />
+        <xs:element
+            name = "eir"
+            type = "CFP_BucketType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+
+<xs:complexType name = "CFP_RuleType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>CFP Rule structure</p>
+                <p>key    : Key to match for the packet type (See for details)</p>
+                <p>action : Action to be taken when the rule is hit (See for details)</p>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+        <xs:element
+            name  = "key"
+            type = "CFP_KeyType"
+        />
+        <xs:element
+            name  = "action"
+            type = "CFP_ActionType"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "CFP_RuleListType">
+    <xs:sequence>
+        <xs:element
+            name = "rule"
+            type = "CFP_RuleType"
+            minOccurs = "1"
+            maxOccurs = "256"
+        />
+    </xs:sequence>
+</xs:complexType>
+
+<xs:complexType name = "CFP_CfgType">
+    <xs:annotation>
+        <xs:documentation>
+            <![CDATA[
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <p>CFP Configuration</p>
+                <table style="width:100%">
+                    <tr>
+                        <th>Field</th>
+                        <th>Details</th>
+                    </tr>
+                    <tr>
+                        <td>pktLenCorrection</td>
+                        <td>packet length correction for flow meter computations
+                            NONE            : No packet length correction
+                            ADD_PRE_SFD     : Add Preamble and SFD to packet length
+                            ADD_PRE_SFD_IFG : Add Preamble, SFD and IFG to packet length
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>portEnableMask</td>
+                        <td>Bitmask of ports where CFP lookup is enabled</td>
+                    </tr>
+                    <tr>
+                        <td>nonIPRules</td>
+                        <td>Rules for non-IP packet (See for details)</td>
+                    </tr>
+                    <tr>
+                        <td>ipv4Rules</td>
+                        <td>Rules for IPv4 packet (See for details)</td>
+                    </tr>
+                    <tr>
+                        <td>ipv6Rules</td>
+                        <td>Rules for IPv6 packet (See for details)</td>
+                    </tr>
+                </table>
+                </body>
+                </html>
+            ]]>
+        </xs:documentation>
+    </xs:annotation>
+    <xs:all>
+        <xs:element
+            name = "pktLenCorrection"
+            type = "CFP_PktLenCorrType"
+        />
+        <xs:element
+            name = "portEnableMask"
+            type = "CFP_PortBitmapString"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "nonIPRules"
+            type = "CFP_RuleListType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "ipv4Rules"
+            type = "CFP_RuleListType"
+            minOccurs = "0"
+        />
+        <xs:element
+            name = "ipv6Rules"
+            type = "CFP_RuleListType"
+            minOccurs = "0"
+        />
+    </xs:all>
+</xs:complexType>
+<xs:element
+    name = "CFP_Cfg"
+    type = "CFP_CfgType"
+    />
+</xs:schema>

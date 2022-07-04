@@ -1,0 +1,232 @@
+#!/usr/bin/python3
+
+# $Id$
+# $Copyright: Copyright 2021 Broadcom Limited.
+# This program is the proprietary software of Broadcom Limited
+# and/or its licensors, and may only be used, duplicated, modified
+# or distributed pursuant to the terms and conditions of a separate,
+# written license agreement executed between you and Broadcom
+# (an "Authorized License").  Except as set forth in an Authorized
+# License, Broadcom grants no license (express or implied), right
+# to use, or waiver of any kind with respect to the Software, and
+# Broadcom expressly reserves all rights in and to the Software
+# and all intellectual property rights therein.  IF YOU HAVE
+# NO AUTHORIZED LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE
+# IN ANY WAY, AND SHOULD IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE
+# ALL USE OF THE SOFTWARE.
+#
+# Except as expressly set forth in the Authorized License,
+#
+# 1.     This program, including its structure, sequence and organization,
+# constitutes the valuable trade secrets of Broadcom, and you shall use
+# all reasonable efforts to protect the confidentiality thereof,
+# and to use this information only in connection with your use of
+# Broadcom integrated circuit products.
+#
+# 2.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS
+# PROVIDED "AS IS" AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES,
+# REPRESENTATIONS OR WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY,
+# OR OTHERWISE, WITH RESPECT TO THE SOFTWARE.  BROADCOM SPECIFICALLY
+# DISCLAIMS ANY AND ALL IMPLIED WARRANTIES OF TITLE, MERCHANTABILITY,
+# NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF VIRUSES,
+# ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
+# CORRESPONDENCE TO nameRIPTION. YOU ASSUME THE ENTIRE RISK ARISING
+# OUT OF USE OR PERFORMANCE OF THE SOFTWARE.
+#
+# 3.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL
+# BROADCOM OR ITS LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL,
+# INCIDENTAL, SPECIAL, INDIRECT, OR EXEMPLARY DAMAGES WHATSOEVER
+# ARISING OUT OF OR IN ANY WAY RELATING TO YOUR USE OF OR INABILITY
+# TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS OF
+# THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR USD 1.00,
+# WHICHEVER IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING
+# ANY FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.$
+####################################################################################
+
+import os
+import sys
+sys.dont_write_bytecode = True
+import getopt
+sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rdb'))
+from otp import OTP_Args
+from otp import OTP_Debugger
+from otp import OTP_ReadTarget, OTP_WriteTarget
+from otp_header import *
+import array
+
+
+OTP_CMD_NONE            = 0
+OTP_CMD_READ            = 1
+OTP_CMD_WRITE           = 2
+OTP_CMD_ENABLE_SEC      = 3
+OTP_CMD_PUBLIC_KEY      = 4
+OTP_CMD_MAC_READ        = 5
+OTP_CMD_MAC_WRITE       = 6
+
+OTP_SEC_BOOT_EN_ROW          = 64
+OTP_MAC_ADDR_0_OCTET123_ADDR = 151
+OTP_MAC_ADDR_0_OCTET456_ADDR = 152
+OTP_MAC_ADDR_1_OCTET123_ADDR = 153
+OTP_MAC_ADDR_1_OCTET456_ADDR = 154
+
+def BCM89559_OTP_Write(row, val, debugger):
+    rdData = []
+    OTP_ReadTarget(OTP_HW_ID_0, row, rdData, debugger)
+    if (val != 0) and len(rdData) > 0 and (rdData[0] == 0):
+        ret = OTP_WriteTarget(OTP_HW_ID_0, row, [val], debugger)
+        print("Programmed "+ hex(val) + " at " + str(row))
+    rdData = []
+    OTP_ReadTarget(OTP_HW_ID_0, row, rdData, debugger)
+    print("Row: {}  Value: 0x{:06x}".format(row, rdData[0]))
+
+def BCM89559_OTP_Read(row, debugger):
+    rdData = []
+    OTP_ReadTarget(OTP_HW_ID_0, row, rdData, debugger)
+    return rdData[0]
+
+def BCM89559_OTP_Usage():
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --read <row_num (in hex)>")
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --write <row_num (in hex)> --data <value (in hex)>")
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --enable_sec")
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --pkey=<public key bin file>")
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --mac_write=0201234567AB --loc=(0/1)>")
+    print("python bcm89559_otp.py -v (b1 or c0) -d (0 or 1) --mac_read")
+    sys.exit(2)
+
+def RowValue(aValue):
+    if len(aValue) == 3:
+        value = (aValue[2] << 16) + (aValue[1] << 8) + aValue[0]
+    elif len(aValue) == 2:
+        value = (aValue[1] << 8) + aValue[0]
+    elif len(aValue) == 1:
+        value = aValue[0]
+    return value
+
+def BCM89559_OTP_Main():
+    chip       = "bcm8955x"
+    version    = None
+    mcm        = False
+    sc         = None
+    ifc        = 0
+    pkey       = []
+    cmd        = OTP_CMD_NONE
+    input_row  = None
+    input_data = None
+    mac_index  = None
+    macArray   = array.array('L')
+    macRow     = [(OTP_MAC_ADDR_0_OCTET123_ADDR,OTP_MAC_ADDR_0_OCTET456_ADDR), \
+                  (OTP_MAC_ADDR_1_OCTET123_ADDR,OTP_MAC_ADDR_1_OCTET456_ADDR)]
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hv:d:",
+                                    ["help", "enable_sec", "version=", "pkey=", "debugger=", "read=", "write=", "data=", "mac_read", "mac_write=", "loc="])
+    except:
+        print("Error in parsing arguments")
+        BCM89559_OTP_Usage()
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            BCM89559_OTP_Usage()
+        elif opt in ("-v", "--version"):
+            version = arg
+        elif opt in ("-d", "--debugger"):
+            ifc     = int(arg)
+        elif opt in ("--enable_sec"):
+            cmd = OTP_CMD_ENABLE_SEC
+        elif opt in ("--read"):
+            cmd      = OTP_CMD_READ
+            input_row = int(arg, 16)
+        elif opt in ("--write"):
+            cmd      = OTP_CMD_WRITE
+            input_row = int(arg, 16)
+        elif opt in ("--data"):
+            input_data = int(arg, 16)
+        elif opt in ("--pkey"):
+            cmd = OTP_CMD_PUBLIC_KEY
+            with open(arg, "rb") as keyfile:
+                while True:
+                    data = keyfile.read(3)
+                    if data:
+                        pkey.append(data)
+                    else:
+                        break
+            keyfile.close()
+            pkey = [RowValue(key) for key in pkey]
+        elif opt in ("--mac_read"):
+            cmd = OTP_CMD_MAC_READ
+        elif opt in ("--mac_write"):
+            cmd = OTP_CMD_MAC_WRITE
+            if (len(arg) != 12):
+                print("Invalid mac address given for mac")
+                sys.exit(1)
+            macArray.append(int('0x'+ arg[0:6:1],0))
+            macArray.append(int('0x'+ arg[6:12:1],0))
+        elif opt in ("--loc"):
+            mac_index = int(arg)
+        else:
+            print("Unknown argument %s" % opt)
+            OTP_Usage()
+
+    if ifc == None:
+        print("Debugger Interface not selected");
+        BCM89559_OTP_Usage()
+    if version == None:
+        print("Chip version not found");
+        BCM89559_OTP_Usage()
+    if cmd == OTP_CMD_NONE:
+        BCM89559_OTP_Usage()
+
+    OTP_Args.CHIP    = chip
+    OTP_Args.VERSION = version
+
+    # Get Debugger object
+    debugger = OTP_Debugger(chip, ifc, mcm, sc)
+
+    if cmd == OTP_CMD_READ:
+        value = BCM89559_OTP_Read(input_row, debugger)
+        print("Data at row {} ({}) is {} ({})".format(input_row, hex(input_row), value, hex(value)))
+
+    elif cmd == OTP_CMD_WRITE and input_data != None:
+        BCM89559_OTP_Write(input_row, input_data, debugger)
+
+    elif cmd == OTP_CMD_ENABLE_SEC:
+        BCM89559_OTP_Write(OTP_SEC_BOOT_EN_ROW, 0x1, debugger)                  # Secure Boot Enable
+
+    elif (cmd == OTP_CMD_PUBLIC_KEY) and (len(pkey) == 86):
+        BCM89559_OTP_Write(OTP_SEC_BOOT_EN_ROW, 0x1, debugger)                  # Secure Boot Enable
+        i = 1
+        for each in pkey:
+            BCM89559_OTP_Write(OTP_SEC_BOOT_EN_ROW + i, each, debugger)         # Public key
+            i = i + 1
+
+    elif cmd == OTP_CMD_MAC_READ:
+        mac1_value1 =  BCM89559_OTP_Read(macRow[0][0], debugger)
+        mac1_value2 =  BCM89559_OTP_Read(macRow[0][1], debugger)
+        mac2_value1 =  BCM89559_OTP_Read(macRow[1][0], debugger)
+        mac2_value2 =  BCM89559_OTP_Read(macRow[1][1], debugger)
+        print("MAC1 : 0x{:012X}".format(((mac1_value1 & 0xffffff) << 24) | (mac1_value2 & 0xffffff)))
+        print("MAC2 : 0x{:012X}".format(((mac2_value1 & 0xffffff) << 24) | (mac2_value2 & 0xffffff)))
+
+    elif cmd == OTP_CMD_MAC_WRITE and (len(macArray) == 2) and mac_index != None:
+        macRow1 = macRow[mac_index][0]
+        macRow2 = macRow[mac_index][1]
+        rmac = array.array('L')
+        rmac.append(BCM89559_OTP_Read(macRow1, debugger))
+        rmac.append(BCM89559_OTP_Read(macRow2, debugger))
+        if ((len(rmac) == len(macArray)) and (rmac[0] == 0) and (rmac[1] == 0)):
+            BCM89559_OTP_Write(macRow1, macArray[0], debugger)              # MAC address
+            BCM89559_OTP_Write(macRow2, macArray[1], debugger)              # MAC Address
+        elif ((len(rmac) == len(macArray)) and (rmac[0] == macArray[0]) and (rmac[1] == macArray[1])):
+            print("Given MAC already present")
+        else:
+            print("MAC already present: 0x{:012X}".format((rmac[0] << 24) + rmac[1]))
+            sys.exit(1)
+
+    else:
+        BCM89559_OTP_Usage()
+
+    debugger.close()
+
+
+
+if __name__ == '__main__':
+    BCM89559_OTP_Main()

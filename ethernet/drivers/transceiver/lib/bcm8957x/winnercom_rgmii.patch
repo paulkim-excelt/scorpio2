@@ -1,0 +1,128 @@
+diff -Naur a/ethxcvr_platform.c b/ethxcvr_platform.c
+--- a/ethxcvr_platform.c	2022-04-13 01:44:53.000000000 +0900
++++ b/ethxcvr_platform.c	2022-06-22 11:12:35.181470000 +0900
+@@ -157,6 +157,14 @@
+     @trace #BRCM_SWREQ_ETHXCVR_KERNEL_HANDLER_BCM8957X
+ 
+ */
++/*
++ETHXCVR_MAX_CONTROLLERS == 18UL 
++BRCM_COMP_LIB_CFLAGS += -DETHXCVR_MAX_CONTROLLERS=18UL
++This is the "map" of all possible port combinations/configurations
++on the orion switch. 
++The port field value is the same multiple elements in this array, 
++but the busMode is unique to the board config.
++*/
+ const ETHXCVR_PlatformControllerMapType ETHXCVR_ControllerMap[ETHXCVR_MAX_CONTROLLERS] =
+ {
+     /* P0 - BRPHY 1G */
+@@ -705,15 +713,45 @@
+     if (ETHXCVR_MODE_ACTIVE == aMode) {
+         ETHXCVR_IO_RDB_REG->mii2_config = IO_MII2_CONFIG_CLOCK_EN_MII2_MASK |
+                                   IO_MII2_CONFIG_SEL_MII2_MASK;
+-        ETHXCVR_IO_RDB_REG->rgmii2_ctl &= ~(IO_RGMII2_CTL_DIS_IMP_MASK |
+-                                    IO_RGMII2_CTL_RMII_CLOCK_SHORTCUT_MASK |
++		/*disable rgmii interface */
++        ETHXCVR_IO_RDB_REG->rgmii2_ctl |= IO_RGMII2_CTL_DIS_IMP_MASK;
++
++        /* set bypass shortcut, clear ctl  */
++        ETHXCVR_IO_RDB_REG->rgmii2_ctl &= (IO_RGMII2_CTL_RMII_CLOCK_SHORTCUT_MASK |
+                                     IO_RGMII2_CTL_RGMII2_CTL_MASK);
+-        ETHXCVR_IO_RDB_REG->rgmii2_ctl |= (IO_RGMII2_CTL_RMII_CLOCK_DIRECTION_MASK     |
+-                                          IO_RGMII2_CTL_RGMII2_BYPASS_IMP_2NS_DEL_MASK |
+-                                          IO_RGMII_ENABLE_2NS_RX_DELAY_MASK);
++        /* set direction */
++        ETHXCVR_IO_RDB_REG->rgmii2_ctl |= IO_RGMII2_CTL_RMII_CLOCK_DIRECTION_MASK;
++		
++        /* set link status   */
+         ETHXCVR_IO_RDB_REG->rgmii2_gmii_ctl |= IO_RGMII2_GMII_CTL_RGMII_LINK_MASK;
++
++		/* set speed to 0 (10M) */
+         ETHXCVR_IO_RDB_REG->rgmii2_gmii_ctl &=  ~IO_RGMII2_GMII_CTL_RGMII_SPD_MASK;
+-        ETHXCVR_IO_RDB_REG->rgmii2_gmii_ctl |=  (aConfig->speed >> 1U) << IO_RGMII2_GMII_CTL_RGMII_SPD_SHIFT;
++
++		/*set the speed (note: shift constant == 0, so reg gets whatever is in aConfig->speed>>1) */
++		ETHXCVR_IO_RDB_REG->rgmii2_gmii_ctl |=	(aConfig->speed >> 1U) << IO_RGMII2_GMII_CTL_RGMII_SPD_SHIFT;
++
++		/* set power to 1.8v*/
++        ETHXCVR_IO_RDB_REG->mii2_config |= IO_MII2_CONFIG_AMP_ENABLE_MII2_MASK;
++		ETHXCVR_IO_RDB_REG->io_mii2_modehv &= ~(IO_MII2_MODEHV_MII1_MODEHV_MASK);
++		
++		/* clear mii2 straps */
++        ETHXCVR_IO_RDB_REG->straps_ov &= ~(IO_STRAPS_OV_MII2_MODE_0_MASK |
++                                                    IO_STRAPS_OV_MII2_MODE_1_MASK |
++                                                    IO_STRAPS_OV_MII2_MODE_2_MASK);
++
++        /* over ride the mii2 straps to rgmii 1G */
++        ETHXCVR_IO_RDB_REG->straps_ov |= IO_STRAPS_OV_MII2_MODE_2_MASK;
++
++        /*enable interface, set bypass shortcut, clear ctl  */
++        ETHXCVR_IO_RDB_REG->rgmii2_ctl &= ~(IO_RGMII2_CTL_DIS_IMP_MASK |
++                                    IO_RGMII2_CTL_RMII_CLOCK_SHORTCUT_MASK |
++                                    IO_RGMII2_CTL_RGMII2_CTL_MASK);
++		
++		/* set the rx _or_ tx 2ns delay */
++        ETHXCVR_IO_RDB_REG->rgmii2_ctl |= (IO_RGMII2_CTL_RGMII2_BYPASS_IMP_2NS_DEL_MASK |
++        (0x06U /* 4 for rx delay, 2 for tx delay, 6 for tx&rx delay, 0 for no delay */ ));
++
+     } else if (ETHXCVR_MODE_DOWN == aMode) {
+         ETHXCVR_IO_RDB_REG->rgmii2_ctl |= IO_RGMII2_CTL_DIS_IMP_MASK;
+         ETHXCVR_IO_RDB_REG->rgmii2_gmii_ctl &= ~IO_RGMII2_GMII_CTL_RGMII_LINK_MASK;
+@@ -742,17 +780,55 @@
+                                          ETHXCVR_ModeType aMode)
+ {
+     if (ETHXCVR_BOOLEAN_TRUE == aConfig->portEnable) {
++
++        /* 0x800e: Enable MII3 Internal Clock & IO pad datasheet recommends value of 7 to meet RGMII spec */
+         ETHXCVR_IO_RDB_REG->mii3_config = IO_MII3_CONFIG_CLOCK_EN_MII3_MASK |
+                                   IO_MII3_CONFIG_SEL_MII3_MASK;
+-        ETHXCVR_IO_RDB_REG->rgmii3_ctl &= ~(IO_RGMII3_CTL_DIS_IMP_MASK |
+-                                    IO_RGMII3_CTL_RMII_CLOCK_SHORTCUT_MASK |
++
++        /*disable rgmii interface */
++        ETHXCVR_IO_RDB_REG->rgmii3_ctl |= IO_RGMII3_CTL_DIS_IMP_MASK;
++
++        /* set bypass shortcut, clear ctl  */
++        ETHXCVR_IO_RDB_REG->rgmii3_ctl &=( IO_RGMII3_CTL_RMII_CLOCK_SHORTCUT_MASK |
+                                     IO_RGMII3_CTL_RGMII3_CTL_MASK);
++        /* set direction */
+         ETHXCVR_IO_RDB_REG->rgmii3_ctl |= IO_RGMII3_CTL_RMII_CLOCK_DIRECTION_MASK;
++
++        /* set link status   */
+         ETHXCVR_IO_RDB_REG->rgmii3_gmii_ctl |= IO_RGMII3_GMII_CTL_RGMII_LINK_MASK;
++        
++        /* set speed to 0 (10M) */
+         ETHXCVR_IO_RDB_REG->rgmii3_gmii_ctl &=  ~IO_RGMII3_GMII_CTL_RGMII_SPD_MASK;
++
++        /*set the speed (note: shift constant == 0, so reg gets whatever is in aConfig->speed>>1) */
+         ETHXCVR_IO_RDB_REG->rgmii3_gmii_ctl |=  (aConfig->speed >> 1U) << IO_RGMII3_GMII_CTL_RGMII_SPD_SHIFT;
++
++        /* set power to 1.8v*/
++        ETHXCVR_IO_RDB_REG->mii3_config |= IO_MII3_CONFIG_AMP_ENABLE_MII3_MASK;
++		ETHXCVR_IO_RDB_REG->io_mii3_modehv &= ~(IO_MII3_MODEHV_MODEHV_MASK);
++		
++        /* clear mii3 straps */
++        ETHXCVR_IO_RDB_REG->straps_ov2&= ~(IO_STRAPS_OV2_MII3_MODE_0_MASK |
++                                                    IO_STRAPS_OV2_MII3_MODE_1_MASK |
++                                                    IO_STRAPS_OV2_MII3_MODE_2_MASK);
++
++        /* over ride the mii3 straps to rgmii 1G */
++        ETHXCVR_IO_RDB_REG->straps_ov2 |= IO_STRAPS_OV2_MII3_MODE_2_MASK;
++
++        /*enable interface, set bypass shortcut, clear ctl  */
++        ETHXCVR_IO_RDB_REG->rgmii3_ctl &= ~(IO_RGMII3_CTL_DIS_IMP_MASK |
++                                    IO_RGMII3_CTL_RMII_CLOCK_SHORTCUT_MASK |
++                                    IO_RGMII3_CTL_RGMII3_CTL_MASK);
++
++		 /* set the rx _or_ tx 2ns delay */
++        ETHXCVR_IO_RDB_REG->rgmii3_ctl |= (IO_RGMII3_CTL_RGMII3_BYPASS_IMP_2NS_DEL_MASK |
++        (0x06U /* 4 for rx delay, 2 for tx delay, 6 for tx&rx delay, 0 for no delay */ ));
++
++
+     } else if (ETHXCVR_MODE_DOWN == aMode) {
++        /* disable the rgmii interface */
+         ETHXCVR_IO_RDB_REG->rgmii3_ctl |= IO_RGMII3_CTL_DIS_IMP_MASK;
++        /* set link status to 0  */
+         ETHXCVR_IO_RDB_REG->rgmii3_gmii_ctl &= ~IO_RGMII3_GMII_CTL_RGMII_LINK_MASK;
+     } else if (ETHXCVR_MODE_ISOLATE == aMode) {
+         ETHXCVR_IO_RDB_REG->rgmii3_ctl |= IO_RGMII3_CTL_DIS_IMP_MASK;

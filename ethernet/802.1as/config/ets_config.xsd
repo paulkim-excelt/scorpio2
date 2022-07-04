@@ -1,0 +1,802 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2021 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name ="ETS_OperModeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Operational Mode</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>      <th>Details</th>  </tr>
+                            <tr> <td>avnu</td>       <td>Avnu mode</td>  </tr>
+                            <tr> <td>ieee-2011</td>  <td>IEEE 802.1AS 2011 mode</td> </tr>
+                            <tr> <td>ieee-2020</td>  <td>IEEE 802.1AS 2020 mode</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "avnu"/>
+            <xs:enumeration value = "ieee-2011"/>
+            <xs:enumeration value = "ieee-2020"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name ="ETS_ClockModeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Avnu Clock Mode</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>   <th>Details</th>  </tr>
+                            <tr> <td>gm</td>      <td>Grandmaster mode</td> </tr>
+                            <tr> <td>slave</td>   <td>Slave mode</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "gm"/>
+            <xs:enumeration value = "slave"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name ="ETS_TimeSourceType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Time Source used by a Clock Master (IEEE modes only)</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>      <th>Details</th> </tr>
+                            <tr> <td>atomic</td>     <td>Device connected to an atomic clock</td> </tr>
+                            <tr> <td>gps</td>        <td>Device with access to timing from satellite system
+                                                         (e.g. GPS)</td> </tr>
+                            <tr> <td>radio</td>      <td>Device with access to timing from terrestrial radio
+                                                         distribution system</td> </tr>
+                            <tr> <td>ptp</td>        <td>Device synchronized to a IEEE 1588 based source of time
+                                                         external to gPTP domain </td> </tr>
+                            <tr> <td>ntp</td>        <td>Device synchronized to NTP (network time protocol) </td> </tr>
+                            <tr> <td>handset</td>    <td>Device with time set manually </td> </tr>
+                            <tr> <td>other</td>      <td>Device with other/unknown source of time </td> </tr>
+                            <tr> <td>oscillator</td> <td>Device with time derived from a free running
+                                                         oscillator </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "atomic"/>
+            <xs:enumeration value = "gps"/>
+            <xs:enumeration value = "radio"/>
+            <xs:enumeration value = "ptp"/>
+            <xs:enumeration value = "ntp"/>
+            <xs:enumeration value = "handset"/>
+            <xs:enumeration value = "other"/>
+            <xs:enumeration value = "oscillator"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_RoleType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Preferred Port Role</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>  <th>Details</th> </tr>
+                            <tr> <td>master</td> <td>Master role</td> </tr>
+                            <tr> <td>slave</td>  <td>Slave role</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "master"/>
+            <xs:enumeration value = "slave"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_AvnuSyncAbsenceTimeoutType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Duration in seconds to wait for GM to appear on startup
+                       before operating as proxy. Only applicable for bridge
+                       in slave mode </p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "1"/>
+            <xs:maxInclusive value = "20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_RateRatioType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Rate ratio</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:double">
+            <xs:minInclusive value = "0.9998"/>
+            <xs:maxInclusive value = "1.000200"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_PortNumType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Hardware port number corresponding to the
+                       interface
+                    </p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "64"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_AvnuOperLogPdelayIntervalType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Operational PDelay interval in logarithmic base 2 format</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th> <th>Details</th> </tr>
+                            <tr> <td>0</td>     <td>1s operational pDelay period</td> </tr>
+                            <tr> <td>1</td>     <td>2s operational pDelay period</td> </tr>
+                            <tr> <td>2</td>     <td>4s operational pDelay period</td> </tr>
+                            <tr> <td>3</td>     <td>8s operational pDelay period</td> </tr>
+                            <tr> <td>127</td>   <td>Operational pDelay disabled </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:enumeration value = "0"/>
+            <xs:enumeration value = "1"/>
+            <xs:enumeration value = "2"/>
+            <xs:enumeration value = "3"/>
+            <xs:enumeration value = "127"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_InitLogIntervalType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Initial interval in logarithmic base 2 format</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th> <th>Details</th> </tr>
+                            <tr> <td>-5</td>    <td>31.25ms period</td> </tr>
+                            <tr> <td>-4</td>    <td>62.5ms period</td> </tr>
+                            <tr> <td>-3</td>    <td>125ms period</td> </tr>
+                            <tr> <td>-2</td>    <td>250ms period</td> </tr>
+                            <tr> <td>-1</td>    <td>500ms period</td> </tr>
+                            <tr> <td>0</td>     <td>1s period</td> </tr>
+                            <tr> <td>1</td>     <td>2s period</td> </tr>
+                            <tr> <td>2</td>     <td>4s period</td> </tr>
+                            <tr> <td>3</td>     <td>8s period</td> </tr>
+                            <tr> <td>4</td>     <td>16s period</td> </tr>
+                            <tr> <td>5</td>     <td>32s period</td> </tr>
+                            <tr> <td>127</td>   <td>Infinite period (disabled)</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:integer">
+            <xs:enumeration value = "-5"/>
+            <xs:enumeration value = "-4"/>
+            <xs:enumeration value = "-3"/>
+            <xs:enumeration value = "-2"/>
+            <xs:enumeration value = "-1"/>
+            <xs:enumeration value = "0"/>
+            <xs:enumeration value = "1"/>
+            <xs:enumeration value = "2"/>
+            <xs:enumeration value = "3"/>
+            <xs:enumeration value = "4"/>
+            <xs:enumeration value = "5"/>
+            <xs:enumeration value = "127"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_AvnuOperLogSyncType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Operational Sync interval in logarithmic base
+                       2 format. Only valid for end points in Avnu mode
+                    </p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th> <th>Details</th> </tr>
+                            <tr> <td>-3</td> <td>125ms oper sync period</td> </tr>
+                            <tr> <td>-2</td> <td>250ms oper sync period</td> </tr>
+                            <tr> <td>-1</td> <td>500ms oper sync period</td> </tr>
+                            <tr> <td>0</td>  <td>1s oper sync period</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:nonPositiveInteger">
+            <xs:enumeration value = "-3"/>
+            <xs:enumeration value = "-2"/>
+            <xs:enumeration value = "-1"/>
+            <xs:enumeration value = "0"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_PeerDelayType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Neighbour propagation delay in nanoseconds</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "1000000"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_ReceiptTimeoutType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Consecutive intervals without receiving message before
+                       declaring timeout
+                    </p>
+                    </body>
+                    string</html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "2"/>
+            <xs:maxInclusive value = "255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_AllowedLostResponsesType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Maximum number of PDelay Request messages for which a
+                       valid response is not received, above which a port is
+                       considered to not be exchanging peer delay messages with
+                       its neighbor
+                     </p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "65535"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_AllowedFaultsType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Maximum number of faults where the peer delay exceeds
+                       the threshold or the computation of neighbour rate ratio
+                       is invalid, above which asCapable is set to false. This
+                       is only applicable in IEEE-2020 mode
+                     </p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "65535"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_DomainType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Domain number. Can only be 0 in Avnu and IEEE-2011 modes
+                    </p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:unsignedInt">
+            <xs:minInclusive value = "0"/>
+            <xs:maxInclusive value = "255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_TimeScaleType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Timescale for the domain </p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th> <th>Details</th> </tr>
+                            <tr> <td>ptp</td>   <td>Timescale with PTP epoch (1 January 1970 00:00:00 TAI) </td> </tr>
+                            <tr> <td>arb</td>   <td>Timescale with arbitrary epoch </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "ptp"/>
+            <xs:enumeration value = "arb"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name = "ETS_RedundancyStateType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Initial redundancy state for the domain </p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>   <th>Details</th> </tr>
+                            <tr> <td>active</td>  <td>Domain is active </td> </tr>
+                            <tr> <td>standby</td> <td>Domain is standby </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base = "xs:string">
+            <xs:enumeration value = "active"/>
+            <xs:enumeration value = "standby"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name = "ETS_SystemIdentityType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>System Identity used for BMCA. Only applicable to
+                       IEEE-2011 and IEEE-2020 modes
+                    </p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>                   <th>Default Value</th> <th>Details</th> </tr>
+                            <tr> <td>priority1</td>               <td>248</td>           <td>Priority1 field used in BMCA</td> </tr>
+                            <tr> <td>clockClass</td>              <td>248</td>           <td>Clock class used in BMCA</td> </tr>
+                            <tr> <td>clockAccuracy</td>           <td>254</td>           <td>Clock accuracy used in BMCA</td> </tr>
+                            <tr> <td>offsetScaledLogVariance</td> <td>17258</td>         <td>Offset Scaled Log Variance used in BMCA</td> </tr>
+                            <tr> <td>priority2</td>               <td>248</td>           <td>Priority2 field used in BMCA</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element name = "priority1" type = "xs:unsignedByte" default = "248" minOccurs = "0" />
+            <xs:element name = "clockClass" type = "xs:unsignedByte" default = "248" minOccurs = "0" />
+            <xs:element name = "clockAccuracy" type = "xs:unsignedByte" default = "254" minOccurs = "0" />
+            <xs:element name = "offsetScaledLogVariance" type = "xs:unsignedShort" default = "17258" minOccurs = "0" />
+            <xs:element name = "priority2" type = "xs:unsignedByte" default = "248" minOccurs = "0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_DomainIntfConfigType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS Per port (per domain) configuration</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>                   <th>Default Value</th>    <th>Details</th> </tr>
+                            <tr> <td>portEnable</td>              <td>Required</td>         <td>Port admin mode
+                                                                                                (enabled/disabled) </td> </tr>
+                            <tr> <td>avnuPortRole</td>            <td>Required in Avnu
+                                                                      mode</td>             <td>Port role. Applicable only
+                                                                                                in Avnu mode</td> </tr>
+                            <tr> <td>initLogSyncInterval</td>     <td>-3</td>               <td>Initial Sync interval in
+                                                                                                logarithmic base 2 format
+                                                                                            </td> </tr>
+                            <tr> <td>avnuOperLogSyncInterval</td> <td>-3</td>               <td>Operational Sync interval
+                                                                                                in logarithmic base 2 format.
+                                                                                                Only valid for end points in
+                                                                                                Avnu mode </td> </tr>
+                            <tr> <td>syncReceiptTimeout</td>      <td>3</td>                <td>Consecutive intervals without
+                                                                                                receiving Sync before declaring
+                                                                                                timeout. Only valid in slave
+                                                                                                role </td> </tr>
+                            <tr> <td>initLogAnnInterval</td>      <td>0</td>                <td>Initial Announce interval in
+                                                                                                logarithmic base 2 format. Only
+                                                                                                applicable in IEEE-2011 and
+                                                                                                IEEE-2020 modes </td> </tr>
+                            <tr> <td>announceReceiptTimeout</td>  <td>3</td>                <td>Consecutive intervals without
+                                                                                                receiving Announce before
+                                                                                                declaring timeout and invoking
+                                                                                                BMCA. Only applicable in IEEE-2011
+                                                                                                and IEEE-2020 modes </td> </tr>
+                            <tr> <td>initLogGptpCapInterval</td>  <td>0</td>                <td>Initial gPTP capable signaling
+                                                                                                message interval in logarithmic
+                                                                                                base 2 format. Only applicable
+                                                                                                in IEEE-2020 mode </td> </tr>
+                            <tr> <td>gptpCapReceiptTimeout</td>   <td>9</td>                <td>Consecutive intervals without
+                                                                                                receiving gPTP capable signaling
+                                                                                                messages before declaring
+                                                                                                timeout. Only applicable in
+                                                                                                IEEE-2020 mode </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "portEnable" type = "xs:boolean" default = "true" />
+            <xs:element name = "avnuPortRole" type = "ETS_RoleType" minOccurs = "0" />
+            <xs:element name = "initLogSyncInterval" type = "ETS_InitLogIntervalType" default = "-3" minOccurs = "0" />
+            <xs:element name = "avnuOperLogSyncInterval" type = "ETS_AvnuOperLogSyncType" default = "-3" minOccurs = "0" />
+            <xs:element name = "syncReceiptTimeout" type = "ETS_ReceiptTimeoutType" default = "3" minOccurs = "0" />
+            <xs:element name = "initLogAnnInterval" type = "ETS_InitLogIntervalType" default = "0" minOccurs = "0" />
+            <xs:element name = "announceReceiptTimeout" type = "ETS_ReceiptTimeoutType" default = "3" minOccurs = "0" />
+            <xs:element name = "initLogGptpCapInterval" type = "ETS_InitLogIntervalType" default = "0" minOccurs = "0" />
+            <xs:element name = "gptpCapReceiptTimeout" type = "ETS_ReceiptTimeoutType" default = "9" minOccurs = "0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_DomainIntfListType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS (domain dependent) interface configuration list</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "intf" type = "ETS_DomainIntfConfigType" minOccurs = "1" maxOccurs = "16" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_DomainConfigType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS Per domain configuration</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>                  <th>Default Value</th> <th>Details</th> </tr>
+                            <tr> <td>domainNumber</td>           <td>0</td>             <td>Domain number. Applicable only
+                                                                                            to IEEE-2020 mode </td> </tr>
+                            <tr> <td>adminMode</td>              <td>true</td>          <td>Domain admin mode. Applicable
+                                                                                            only to IEEE-2020 mode
+                                                                                            true = Enabled, false = Disabled
+                                                                                            </td> </tr>
+                            <tr> <td>systemIdentity</td>         <td>0</td>             <td>System Identity. 14 byte identifier
+                                                                                            formed by concatenating various
+                                                                                            fields. Applicable in IEEE-2011 and
+                                                                                            IEEE-2020 modes </td> </tr>
+                            <tr> <td>timeScale</td>              <td>ptp</td>           <td>Timescale of the domain. Applicable
+                                                                                            only to IEEE-2020 mode </td> </tr>
+                            <tr> <td>initState</td>              <td>active</td>        <td>Initial state of the domain.
+                                                                                            Applicable only to IEEE-2020 mode
+                                                                                            </td> </tr>
+                            <tr> <td>avnuClockMode</td>          <td>Required</td>      <td>Clock Mode. Applicable only to
+                                                                                            Avnu mode </td> </tr>
+                            <tr> <td>avnuSyncAbsenceTimeout</td> <td>10</td>            <td>Duration to wait for GM to appear on
+                                                                                            startup before operating as proxy.
+                                                                                            Only applicable for bridge in Avnu
+                                                                                            slave mode</td> </tr>
+                            <tr> <td>avnuGmRateRatio</td>        <td>1.0</td>           <td>Starting grandmaster rate ratio. Only
+                                                                                            applicable to Avnu slave mode </td> </tr>
+                            <tr> <td>domainIntfCfg</td>          <td>Required</td>      <td>ETS domain dependent interface
+                                                                                            configuration list</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:sequence>
+            <xs:element name = "domainNumber" type = "ETS_DomainType" default = "0" />
+            <xs:element name = "adminMode" type = "xs:boolean" default = "true" minOccurs = "0" />
+            <xs:element name = "systemIdentity" type = "ETS_SystemIdentityType" minOccurs = "0" />
+            <xs:element name = "timeScale" type = "ETS_TimeScaleType" default = "ptp" minOccurs = "0" />
+            <xs:element name = "initState" type = "ETS_RedundancyStateType" default = "active" minOccurs = "0" />
+            <xs:element name = "avnuClockMode" type = "ETS_ClockModeType" minOccurs = "0" />
+            <xs:element name = "avnuSyncAbsenceTimeout" type = "ETS_AvnuSyncAbsenceTimeoutType" minOccurs = "0" default = "10" />
+            <xs:element name = "avnuGmRateRatio" type = "ETS_RateRatioType" minOccurs = "0" default = "1.0" />
+            <xs:element name = "domainIntfCfg" type = "ETS_DomainIntfListType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_DomainListType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS domain configuration list</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "domain" type = "ETS_DomainConfigType" minOccurs = "1" maxOccurs = "4" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_IntfConfigType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS Per port configuration</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>                     <th>Default Value</th> <th>Details</th> </tr>
+                            <tr> <td>hwPortNum</td>                 <td>Required</td>      <td>Hardware port corresponding
+                                                                                               to the interface </td> </tr>
+                            <tr> <td>initLogPdelayInterval</td>     <td>0</td>             <td>Initial PDelay interval in
+                                                                                               logarithmic base 2 format </td> </tr>
+                            <tr> <td>avnuOperLogPdelayInterval</td> <td>0</td>             <td>Operational PDelay interval in
+                                                                                               logarithmic base 2 format (only
+                                                                                               applicable to Avnu mode) </td> </tr>
+                            <tr> <td>avnuNbrPropDelay</td>          <td>0</td>             <td>Neighbour propagation delay in
+                                                                                               nanoseconds (only applicable to
+                                                                                               Avnu mode) </td> </tr>
+                            <tr> <td>avnuNbrRateRatio</td>          <td>1.0</td>           <td>Neighbour rate ratio. This is only
+                                                                                               applicable to Avnu mode </td> </tr>
+                            <tr> <td>allowedLostResp</td>           <td>3 for Avnu and
+                                                                        IEEE-2011 modes,
+                                                                        9 for IEEE-2020
+                                                                        mode </td>         <td>Maximum number of PDelay Request
+                                                                                               messages for which a valid response
+                                                                                               is not received, above which a port
+                                                                                               is considered to not be exchanging
+                                                                                               peer delay messages with its
+                                                                                               neighbor </td> </tr>
+                            <tr> <td>allowedFaults</td>             <td>9</td>             <td>Maximum number of faults where the
+                                                                                               peer delay exceeds the threshold or
+                                                                                               the computation of neighbour rate
+                                                                                               ratio is invalid, above which
+                                                                                               asCapable is set to false. This is
+                                                                                               only applicable in IEEE-2020
+                                                                                               mode </td> </tr>
+                            <tr> <td>delayThreshold</td>            <td>Required in
+                                                                        IEEE-2011 and
+                                                                        IEEE-2020
+                                                                        modes </td>        <td>Maximum allowed peer delay beyond
+                                                                                               asCapable is set to false </td> </tr>
+                            <tr> <td>delayAsymmetry</td>            <td>0</td>             <td>Asymmetry in the propagation delay,
+                                                                                               if modeled </td> </tr>
+                            <tr> <td>ingressLatency</td>            <td>0</td>             <td>Amount in nanoseconds by which the
+                                                                                               ingress timestamp measurement plane
+                                                                                               is different from the reference
+                                                                                               plane </td> </tr>
+                            <tr> <td>egressLatency</td>             <td>0</td>             <td>Amount in nanoseconds by which the
+                                                                                               egress timestamp measurement plane
+                                                                                               is different from the reference
+                                                                                               plane </td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "hwPortNum" type = "ETS_PortNumType" />
+            <xs:element name = "initLogPdelayInterval" type = "ETS_InitLogIntervalType" default = "0" minOccurs = "0" />
+            <xs:element name = "avnuOperLogPdelayInterval" type = "ETS_AvnuOperLogPdelayIntervalType" default = "0" minOccurs = "0" />
+            <xs:element name = "avnuNbrPropDelay" type = "ETS_PeerDelayType" minOccurs = "0" default = "0" />
+            <xs:element name = "avnuNbrRateRatio" type = "ETS_RateRatioType" minOccurs = "0" default = "1.0" />
+            <xs:element name = "allowedLostResp" type = "ETS_AllowedLostResponsesType" minOccurs = "0" default = "3" />
+            <xs:element name = "allowedFaults" type = "ETS_AllowedFaultsType" minOccurs = "0" default = "9" />
+            <xs:element name = "delayThreshold" type = "xs:unsignedInt" minOccurs = "0" default = "0" />
+            <xs:element name = "delayAsymmetry" type = "xs:short" minOccurs = "0" default = "0" />
+            <xs:element name = "ingressLatency" type = "xs:unsignedShort" default = "0" minOccurs = "0" />
+            <xs:element name = "egressLatency" type = "xs:unsignedShort" default = "0" minOccurs = "0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_IntfListType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS (domain independent) interface configuration list</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "intf" type = "ETS_IntfConfigType" minOccurs = "1" maxOccurs = "16" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name = "ETS_Config">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>ETS configuration</p>
+                        <table style="width:100%">
+                            <tr> <th>Field</th>              <th>Default Value</th> <th>Details</th> </tr>
+                            <tr> <td>operMode</td>           <td>Required</td>      <td>Operational mode</td> </tr>
+                            <tr> <td>globalEnable</td>       <td>Required</td>      <td>TRUE = enabled,
+                                                                                        FALSE = disabled</td> </tr>
+                            <tr> <td>timeSource</td>         <td>oscillator</td>    <td>Time source</td> </tr>
+                            <tr> <td>syncLocked</td>         <td>true</td>          <td>Indicates whether or not the Sync gets
+                                                                                        propagated immediately or not. Applicable
+                                                                                        only on switches and only in IEEE-2020
+                                                                                        mode </td> </tr>
+                            <tr> <td>boundaryModeEnable</td> <td>false</td>         <td>Indicates whether operating as a boundary
+                                                                                        clock or not. Applicable only for switch
+                                                                                        operating as a slave </td> </tr>
+                            <tr> <td>intfCfg</td>            <td>Required</td>      <td>ETS domain independent interface configuration
+                                                                                        list</td> </tr>
+                            <tr> <td>domainCfg</td>          <td>Required</td>      <td>ETS domain configuration list</td> </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name = "globalEnable" type = "xs:boolean" minOccurs = "1" maxOccurs = "1" />
+            <xs:element name = "operMode" type = "ETS_OperModeType" minOccurs = "1" maxOccurs = "1" />
+            <xs:element name = "timeSource" type = "ETS_TimeSourceType" minOccurs = "0" maxOccurs = "1" />
+            <xs:element name = "syncLocked" type = "xs:boolean" minOccurs = "0" maxOccurs = "1" />
+            <xs:element name = "boundaryModeEnable" type = "xs:boolean" minOccurs = "0" maxOccurs = "1" />
+            <xs:element name = "intfCfg" type = "ETS_IntfListType" minOccurs = "1" />
+            <xs:element name = "domainCfg" type = "ETS_DomainListType" minOccurs = "1" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:element
+        name = "ETS_Cfg"
+        type = "ETS_Config"
+    />
+</xs:schema>

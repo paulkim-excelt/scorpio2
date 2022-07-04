@@ -1,0 +1,2 @@
+0x0 0x1000 system/imgl/tests/data/test_text.bin 0xbbbbbbbb
+0x2 0x1000 system/imgl/tests/data/test_data.bin 0xcccccccc

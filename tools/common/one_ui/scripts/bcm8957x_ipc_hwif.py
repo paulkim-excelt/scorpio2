@@ -1,0 +1,122 @@
+#!/usr/bin/python3
+
+#
+# $Id$
+# Copyright: Copyright 2021 Broadcom Limited.
+# This program is the proprietary software of Broadcom Limited
+# and/or its licensors, and may only be used, duplicated, modified
+# or distributed pursuant to the terms and conditions of a separate,
+# written license agreement executed between you and Broadcom
+# (an "Authorized License").  Except as set forth in an Authorized
+# License, Broadcom grants no license (express or implied), right
+# to use, or waiver of any kind with respect to the Software, and
+# Broadcom expressly reserves all rights in and to the Software
+# and all intellectual property rights therein.  IF YOU HAVE
+# NO AUTHORIZED LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE
+# IN ANY WAY, AND SHOULD IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE
+# ALL USE OF THE SOFTWARE.
+#
+# Except as expressly set forth in the Authorized License,
+#
+# 1.     This program, including its structure, sequence and organization,
+# constitutes the valuable trade secrets of Broadcom, and you shall use
+# all reasonable efforts to protect the confidentiality thereof,
+# and to use this information only in connection with your use of
+# Broadcom integrated circuit products.
+#
+# 2.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS
+# PROVIDED "AS IS" AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES,
+# REPRESENTATIONS OR WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY,
+# OR OTHERWISE, WITH RESPECT TO THE SOFTWARE.  BROADCOM SPECIFICALLY
+# DISCLAIMS ANY AND ALL IMPLIED WARRANTIES OF TITLE, MERCHANTABILITY,
+# NONINFRINGEMENT, FITNESS FOR A PARTICULAR PURPOSE, LACK OF VIRUSES,
+# ACCURACY OR COMPLETENESS, QUIET ENJOYMENT, QUIET POSSESSION OR
+# CORRESPONDENCE TO DESCRIPTION. YOU ASSUME THE ENTIRE RISK ARISING
+# OUT OF USE OR PERFORMANCE OF THE SOFTWARE.
+#
+# 3.     TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL
+# BROADCOM OR ITS LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL,
+# INCIDENTAL, SPECIAL, INDIRECT, OR EXEMPLARY DAMAGES WHATSOEVER
+# ARISING OUT OF OR IN ANY WAY RELATING TO YOUR USE OF OR INABILITY
+# TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS OF
+# THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR USD 1.00,
+# WHICHEVER IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING
+# ANY FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.$
+####################################################################################
+
+import sys
+import os
+sys.path.insert(1, os.path.join(os.path.dirname(os.path.realpath(__file__)), 'rdb'))
+from bcm8957x_a0_chipmisc_rdb import *
+
+
+CHIPMISC_REGS = CHIPMISC_RDBType()
+IPC_BUFF_INFO_REG     = CHIPMISC_BASE + CHIPMISC_REGS.spare_sw_reg7
+IPC_BUFF_INFO2_REG    = CHIPMISC_BASE + CHIPMISC_REGS.spare_sw_reg10
+IPC_TARGET_STAT_REG   = CHIPMISC_BASE + CHIPMISC_REGS.spare_sw_reg8
+IPC_HOST_STAT_REG     = CHIPMISC_BASE + CHIPMISC_REGS.spare_sw_reg9
+MISC_CPUSYS_MISC      = CHIPMISC_BASE + CHIPMISC_REGS.cpusys_misc
+MISC_SPARE_HW_REG5    = CHIPMISC_BASE + CHIPMISC_REGS.spare_hw_reg5
+MISC_SPARE_HW_REG6    = CHIPMISC_BASE + CHIPMISC_REGS.spare_hw_reg6
+MISC_DEVICEID_LO      = CHIPMISC_BASE + CHIPMISC_REGS.deviceid_lo
+MISC_DEVICEID_HI      = CHIPMISC_BASE + CHIPMISC_REGS.deviceid_hi
+MISC_MODEL_REV_NUM    = CHIPMISC_BASE + CHIPMISC_REGS.model_rev_num
+
+MISC_CPUSYS_MISC_SOFT_INTR_MASK = CHIPMISC_CPUSYS_MISC_SOFT_INTR_MASK
+
+IPC_MAX_PTR_MASK                = 0xF
+IPC_BUFF_INFO_BASE_ALIGN_SHIFT  = 11
+IPC_BUFF_INFO2_BASE_ALIGN_SHIFT = 19
+IPC_INTR_NUM                    = 7
+
+IPC_BUFF_INFO_BASE_SHIFT        = 8
+IPC_BUFF_INFO_BASE_MASK         = 0xFF00
+IPC_BUFF_INFO_SZ_SHIFT          = 4
+IPC_BUFF_INFO_SZ_MASK           = 0x00F0
+IPC_BUFF_INFO_CNT_SHIFT         = 2
+IPC_BUFF_INFO_CNT_MASK          = 0x000C
+IPC_BUFF_INFO_RSVD_SHIFT        = 1
+IPC_BUFF_INFO_RSVD_MASK         = 0x0002
+IPC_BUFF_INFO_PAR_SHIFT         = 0
+IPC_BUFF_INFO_PAR_MASK          = 0x0001
+
+IPC_BUFF_INFO2_BASE_SHIFT       = 1
+IPC_BUFF_INFO2_BASE_MASK        = 0x3FFE
+IPC_BUFF_INFO2_RSVD_SHIFT       = 14
+IPC_BUFF_INFO2_RSVD_MASK        = 0xC000
+IPC_BUFF_INFO2_PAR_SHIFT        = 0
+IPC_BUFF_INFO2_PAR_MASK         = 0x0001
+
+IPC_TARGET_STAT_RSVD_SHIFT      = 11
+IPC_TARGET_STAT_RSVD_MASK       = 0xF100
+IPC_TARGET_STAT_PRI_SHIFT       = 8
+IPC_TARGET_STAT_PRI_MASK        = 0x0700
+IPC_TARGET_STAT_PRI_REBOOT      = 7
+IPC_TARGET_STAT_PRI_6           = 6
+IPC_TARGET_STAT_PRI_5           = 5
+IPC_TARGET_STAT_PRI_4           = 4
+IPC_TARGET_STAT_PRI_3           = 3
+IPC_TARGET_STAT_PRI_2           = 2
+IPC_TARGET_STAT_PRI_1           = 1
+IPC_TARGET_STAT_PRI_PAUSE       = 0
+IPC_TARGET_STAT_WR_SHIFT        = 4
+IPC_TARGET_STAT_WR_MASK         = IPC_MAX_PTR_MASK << IPC_TARGET_STAT_WR_SHIFT
+IPC_TARGET_STAT_RD_SHIFT        = 0
+IPC_TARGET_STAT_RD_MASK         = IPC_MAX_PTR_MASK << IPC_TARGET_STAT_RD_SHIFT
+
+IPC_HOST_STAT_RSVD_SHIFT        = 8
+IPC_HOST_STAT_RSVD_MASK         = 0xFF00
+IPC_HOST_STAT_WR_SHIFT          = 4
+IPC_HOST_STAT_WR_MASK           = IPC_MAX_PTR_MASK << IPC_HOST_STAT_WR_SHIFT
+IPC_HOST_STAT_RD_SHIFT          = 0
+IPC_HOST_STAT_RD_MASK           = IPC_MAX_PTR_MASK << IPC_HOST_STAT_RD_SHIFT
+
+IPC_COMMAND_MAGIC           = 0xa5a5a5a5
+IPC_REPLY_MAGIC             = 0x5a5a5a5a
+
+IPC_HDR_MAGIC_INDEX        = 0
+IPC_HDR_CHKSUM_INDEX       = 1
+IPC_HDR_COMMAND_INDEX      = 2
+IPC_HDR_LENGTH_INDEX       = 3
+IPC_HDR_LAST_INDEX         = 4

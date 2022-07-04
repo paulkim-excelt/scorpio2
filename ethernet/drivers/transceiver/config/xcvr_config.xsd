@@ -1,0 +1,501 @@
+<?xml version="1.0"?>
+<!--
+ Copyright 2021 Broadcom Limited.  All rights reserved.
+
+ This program is the proprietary software of Broadcom Limited and/or its
+ licensors, and may only be used, duplicated, modified or distributed pursuant
+ to the terms and conditions of a separate, written license agreement executed
+ between you and Broadcom (an "Authorized License").
+
+ Except as set forth in an Authorized License, Broadcom grants no license
+ (express or implied), right to use, or waiver of any kind with respect to the
+ Software, and Broadcom expressly reserves all rights in and to the Software
+ and all intellectual property rights therein.  IF YOU HAVE NO AUTHORIZED
+ LICENSE, THEN YOU HAVE NO RIGHT TO USE THIS SOFTWARE IN ANY WAY, AND SHOULD
+ IMMEDIATELY NOTIFY BROADCOM AND DISCONTINUE ALL USE OF THE SOFTWARE.
+
+  Except as expressly set forth in the Authorized License,
+ 1. This program, including its structure, sequence and organization,
+    constitutes the valuable trade secrets of Broadcom, and you shall use all
+    reasonable efforts to protect the confidentiality thereof, and to use this
+    information only in connection with your use of Broadcom integrated
+    circuit products.
+
+ 2. TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SOFTWARE IS PROVIDED "AS IS"
+    AND WITH ALL FAULTS AND BROADCOM MAKES NO PROMISES, REPRESENTATIONS OR
+    WARRANTIES, EITHER EXPRESS, IMPLIED, STATUTORY, OR OTHERWISE, WITH RESPECT
+    TO THE SOFTWARE.  BROADCOM SPECIFICALLY DISCLAIMS ANY AND ALL IMPLIED
+    WARRANTIES OF TITLE, MERCHANTABILITY, NONINFRINGEMENT, FITNESS FOR A
+    PARTICULAR PURPOSE, LACK OF VIRUSES, ACCURACY OR COMPLETENESS,
+    QUIET ENJOYMENT, QUIET POSSESSION OR CORRESPONDENCE TO DESCRIPTION.
+    YOU ASSUME THE ENTIRE RISK ARISING OUT OF USE OR PERFORMANCE OF THE
+    SOFTWARE.
+
+ 3. TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL BROADCOM OR ITS
+    LICENSORS BE LIABLE FOR (i) CONSEQUENTIAL, INCIDENTAL, SPECIAL, INDIRECT,
+    OR EXEMPLARY DAMAGES WHATSOEVER ARISING OUT OF OR IN ANY WAY RELATING TO
+    YOUR USE OF OR INABILITY TO USE THE SOFTWARE EVEN IF BROADCOM HAS BEEN
+    ADVISED OF THE POSSIBILITY OF SUCH DAMAGES; OR (ii) ANY AMOUNT IN EXCESS
+    OF THE AMOUNT ACTUALLY PAID FOR THE SOFTWARE ITSELF OR U.S. $1, WHICHEVER
+    IS GREATER. THESE LIMITATIONS SHALL APPLY NOTWITHSTANDING ANY FAILURE OF
+    ESSENTIAL PURPOSE OF ANY LIMITED REMEDY.
+-->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="busModeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Mode of the data bus connecting the MAC and the PHY</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="rgmii"/>
+            <xs:enumeration value="rvmii"/>
+            <xs:enumeration value="sgmii"/>
+            <xs:enumeration value="rmii"/>
+            <xs:enumeration value="mii"/>
+            <xs:enumeration value="pcie"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="speedType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Ethernet transceiver speed in Mbps</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:list>
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="10"/>
+                    <xs:enumeration value="100"/>
+                    <xs:enumeration value="1000"/>
+                    <xs:enumeration value="2500"/>
+                    <xs:enumeration value="5000"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:list>
+    </xs:simpleType>
+
+    <xs:simpleType name="duplexType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Transceiver duplex mode full/half duplex</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="half"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="flowControlType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                        <p>Transceiver Flow control. This will be the preferred flow
+                           control when auto-negotiation is enabled
+                        </p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                            </tr>
+                            <tr>
+                                <td>none</td>
+                                <td>No pause</td>
+                            </tr>
+                            <tr>
+                                <td>tx-only</td>
+                                <td>Transmit pause only</td>
+                            </tr>
+                            <tr>
+                                <td>tx-rx</td>
+                                <td>Both transmit and receive pause</td>
+                            </tr>
+                            <tr>
+                                <td>rx-only</td>
+                                <td>Receive pause only</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="none"/>
+            <xs:enumeration value="tx-only"/>
+            <xs:enumeration value="tx-rx"/>
+            <xs:enumeration value="rx-only"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="accessModeType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Access mode for the PHY. Bus is assumed to be integrated and hence memory mapped</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                            </tr>
+                            <tr>
+                                <td>MMAP</td>
+                                <td>Memory mapped access</td>
+                            </tr>
+                            <tr>
+                                <td>MDIO</td>
+                                <td>MDIO access</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="MMAP"/>
+            <xs:enumeration value="MDIO"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="phyMediaType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Physical medium for connecting to external world</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="100Base-T1"/>
+            <xs:enumeration value="100Base-Tx"/>
+            <xs:enumeration value="1000Base-T1"/>
+            <xs:enumeration value="1000Base-T"/>
+            <xs:enumeration value="1000Base-X"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="driverParamType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Key value pair which can be used by driver</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                                <th>Default Value</th>
+                            </tr>
+                            <tr>
+                                <td>key</td>
+                                <td>Key data</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>value</td>
+                                <td>value data</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>comment</td>
+                                <td>Comment for this key-value pair</td>
+                                <td>Null</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="key"     type="xs:unsignedInt" />
+            <xs:element name="value"   type="xs:unsignedInt" />
+            <xs:element name="comment" type="xs:string" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="driverParamsListType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Driver parameters list</p>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="param" type="driverParamType" minOccurs="0" maxOccurs="4" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="busDeviceType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Bus configuration data</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                                <th>Default Value</th>
+                            </tr>
+                            <tr>
+                                <td>cntrlID</td>
+                                <td>Controller index</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>instID</td>
+                                <td>Instance index</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>driverParams</td>
+                                <td>Driver parameters</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="cntrlID"      type="xs:unsignedByte" />
+            <xs:element name="instID"       type="xs:unsignedByte"      minOccurs="0" />
+            <xs:element name="driverParams" type="driverParamsListType" minOccurs="0" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="phyDeviceType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Phy configuration data</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                                <th>Default Value</th>
+                            </tr>
+                            <tr>
+                                <td>hwID</td>
+                                <td>Hardware index of the controller</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>slaveID</td>
+                                <td>Slave address for PHY controled via MDIO </td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>accessMode</td>
+                                <td>Access Mode</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>phyMedia</td>
+                                <td>Physical media</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>master</td>
+                                <td>Master/Slave Mode</td>
+                                <td>True</td>
+                            </tr>
+                            <tr>
+                                <td>driverParams</td>
+                                <td>Driver parameters</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="hwID"         type="xs:unsignedByte" />
+            <xs:element name="slaveID"      type="xs:unsignedByte"      minOccurs="0" />
+            <xs:element name="accessMode"   type="accessModeType" />
+            <xs:element name="phyMedia"     type="phyMediaType" />
+            <xs:element name="master"       type="xs:boolean"           minOccurs="0" />
+            <xs:element name="driverParams" type="driverParamsListType" minOccurs="0" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:complexType name="portConfigType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <p>Port configuration structure</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                                <th>Default Value</th>
+                            </tr>
+                            <tr>
+                                <td>id</td>
+                                <td>Port index. This is the chip port number</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>speed</td>
+                                <td>Bus Speed</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>autoNegEnable</td>
+                                <td>Autoneg status True = enable, False= disable</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>enable</td>
+                                <td>Flag indicating whether the port is enabled or not. True = enable, False= disable</td>
+                                <td>True</td>
+                            </tr>
+                            <tr>
+                                <td>duplex</td>
+                                <td>Duplex mode</td>
+                                <td>full</td>
+                            </tr>
+                            <tr>
+                                <td>flowControl</td>
+                                <td>Flow Control</td>
+                                <td>none</td>
+                            </tr>
+                            <tr>
+                                <td>jumbo</td>
+                                <td>Jumbo frame support status. True = enable, False= disable</td>
+                                <td>False</td>
+                            </tr>
+                            <tr>
+                                <td>busMode</td>
+                                <td>Bus mode</td>
+                                <td>Integreated phy</td>
+                            </tr>
+                            <tr>
+                                <td>bus</td>
+                                <td>Bus configuration data</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>phy</td>
+                                <td>Phy configuration data</td>
+                                <td>0</td>
+                            </tr>
+                        </table>
+                    </body>
+                    </html>
+                ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:all>
+            <xs:element name="id"            type="xs:unsignedByte"/>
+            <xs:element name="speed"         type="speedType"/>
+            <xs:element name="autoNegEnable" type="xs:boolean"/>
+            <xs:element name="enable"        type="xs:boolean"      minOccurs="0" />
+            <xs:element name="duplex"        type="duplexType"      minOccurs="0" />
+            <xs:element name="flowControl"   type="flowControlType" minOccurs="0" />
+            <xs:element name="jumbo"         type="xs:boolean"      minOccurs="0" />
+            <xs:element name="busMode"       type="busModeType"     minOccurs="0" />
+            <xs:element name="bus"           type="busDeviceType"   minOccurs="0" />
+            <xs:element name="phy"           type="phyDeviceType"   minOccurs="0" />
+        </xs:all>
+    </xs:complexType>
+
+    <xs:element name="xcvr_Cfg">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    <![CDATA[
+                        <!DOCTYPE html>
+                        <html>
+                        <body>
+                        <p>XCVR configuration</p>
+                        <table style="width:100%">
+                            <tr>
+                                <th>Field</th>
+                                <th>Details</th>
+                                <th>Default Value</th>
+                            </tr>
+                            <tr>
+                                <td>name</td>
+                                <td>Configuration name</td>
+                                <td>Required</td>
+                            </tr>
+                            <tr>
+                                <td>port</td>
+                                <td>Port configuration </td>
+                                <td>Required</td>
+                            </tr>
+                        </table>
+                        </body>
+                        </html>
+                    ]]>
+                </xs:documentation>
+        </xs:annotation>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+                <xs:element name="port" type="portConfigType" minOccurs="1" maxOccurs="16"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="uniquePortID">
+            <xs:selector xpath="port" />
+            <xs:field xpath="./id" />
+        </xs:unique>
+    </xs:element>
+</xs:schema>

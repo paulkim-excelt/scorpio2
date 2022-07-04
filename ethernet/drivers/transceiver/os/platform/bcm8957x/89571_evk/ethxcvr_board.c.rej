@@ -1,0 +1,12 @@
+--- a/ethxcvr_board.c	2022-05-17 16:35:36.234588748 +0900
++++ b/ethxcvr_board.c	2022-05-17 18:34:04.351229000 +0900
+@@ -86,9 +86,6 @@
+     |  5   |    RGMII   |      DENALI     |       1       |
+     |  6   |    RGMII   |      DENALI     |       2       |
+ */
+-
+- 
+-
+ int32_t ETHXCVR_BoardGetPhyFnTbl(const ETHXCVR_PortConfigType *const aConfig,
+                                  const ETHXCVR_FuncTblType **const aPhyFnTbl,
+                                  ETHXCVR_CntxtType **const aPhyCntxt)

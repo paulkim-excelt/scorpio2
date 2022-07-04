@@ -1,0 +1,1 @@
+0x0 0x1000 system/imgl/tests/data/test_bl.img 0xaaaaaaaa
